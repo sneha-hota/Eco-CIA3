@@ -1,0 +1,1760 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduVerse Ultra: India & Nordic Live Intelligence Platform</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #F7F5F0;          /* Soft warm oatmeal */
+      --card-bg: #FFFFFF;           /* Crisp clean white */
+      --card-tint: #FAF8F5;         /* Subtle paper tone */
+      --border-color: #2D3748;      /* Deep slate charcoal */
+      --accent-sage: #81A296;       /* Muted pastel green */
+      --accent-rose: #D4A5A5;       /* Soft dusty rose */
+      --accent-gold: #E3B778;       /* Subtle warm gold */
+      --accent-slate: #8E9AAF;      /* Muted periwinkle slate */
+      --shadow-color: #2D3748;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      color: var(--border-color);
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, .font-display {
+      font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .brutalist-border { border: 3px solid var(--border-color); }
+    .brutalist-border-sm { border: 2px solid var(--border-color); }
+    
+    .brutalist-card {
+      border: 3px solid var(--border-color);
+      box-shadow: 4px 4px 0px var(--shadow-color);
+      background-color: var(--card-bg);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    
+    .brutalist-card-lg {
+      border: 3.5px solid var(--border-color);
+      box-shadow: 6px 6px 0px var(--shadow-color);
+      background-color: var(--card-bg);
+    }
+    
+    .brutalist-btn {
+      border: 2.5px solid var(--border-color);
+      box-shadow: 3px 3px 0px var(--shadow-color);
+      transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      user-select: none;
+    }
+    .brutalist-btn:hover {
+      transform: translate(-1.5px, -1.5px);
+      box-shadow: 4.5px 4.5px 0px var(--shadow-color);
+    }
+    .brutalist-btn:active {
+      transform: translate(1.5px, 1.5px);
+      box-shadow: 1.5px 1.5px 0px var(--shadow-color);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 9px; height: 9px; }
+    ::-webkit-scrollbar-track { background: #F7F5F0; border-left: 2px solid var(--border-color); }
+    ::-webkit-scrollbar-thumb { background: var(--accent-sage); border: 2px solid var(--border-color); border-radius: 4px; }
+
+    /* Mascot Keyframes */
+    @keyframes owlFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(1.5deg); }
+    }
+    @keyframes owlBlink {
+      0%, 90%, 100% { transform: scaleY(1); }
+      95% { transform: scaleY(0.1); }
+    }
+    .animate-owl { animation: owlFloat 3.8s ease-in-out infinite; }
+    .owl-eye { transform-origin: center; animation: owlBlink 4.2s infinite; }
+
+    /* Custom Range Sliders */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: #E2E8F0;
+      border: 2px solid var(--border-color);
+      height: 12px;
+      border-radius: 6px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent-rose);
+      border: 2px solid var(--border-color);
+      cursor: pointer;
+      box-shadow: 2px 2px 0px var(--shadow-color);
+    }
+  </style>
+</head>
+<body class="p-3 sm:p-6 md:p-8">
+
+  <!-- FLOATING AUDIO CONTROLS & MASCOT HUD -->
+  <div class="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3 pointer-events-none">
+    <div id="mascotFloatingBox" class="pointer-events-auto brutalist-card bg-[#FAF8F5] p-4 rounded-2xl max-w-xs transition-all duration-300 transform scale-100 flex items-start gap-3 relative">
+      <button onclick="closeMascotPopup()" class="absolute -top-2.5 -right-2.5 w-6 h-6 bg-[#D4A5A5] text-[#2D3748] rounded-full font-black border-2 border-[#2D3748] flex items-center justify-center text-[11px] hover:bg-[#2D3748] hover:text-white">✕</button>
+      <div class="w-12 h-12 bg-white rounded-xl brutalist-border-sm flex items-center justify-center shrink-0">
+        <svg id="floatingOwlSvg" class="w-9 h-9 animate-owl" viewBox="0 0 24 24" fill="none" stroke="#2D3748" stroke-width="2">
+          <path d="M12 2C8 2 5 5 5 9v11c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V9c0-4-3-7-7-7z" fill="#D4A5A5"/>
+          <circle class="owl-eye" cx="9" cy="9" r="2.5" fill="#FFF"/><circle class="owl-eye" cx="15" cy="9" r="2.5" fill="#FFF"/>
+          <circle cx="9" cy="9" r="1" fill="#2D3748"/><circle cx="15" cy="9" r="1" fill="#2D3748"/>
+          <path d="M12 12l-1.5 3h3L12 12z" fill="#E3B778"/>
+        </svg>
+      </div>
+      <div>
+        <p class="font-bold text-[11px] uppercase tracking-wider text-gray-500">Prof. Owlsley Note</p>
+        <p id="mascotSpeechText" class="font-bold text-xs text-[#2D3748] mt-0.5 leading-snug">Hoot! Tweak levers in the Policy Simulator, inspect live year insights, or browse our open data hub!</p>
+      </div>
+    </div>
+
+    <div class="pointer-events-auto flex items-center gap-2 brutalist-card bg-white p-2 rounded-2xl">
+      <button onclick="toggleBgm()" id="bgmBtn" class="brutalist-btn bg-[#81A296] text-white px-3 py-1.5 rounded-xl font-bold text-xs uppercase flex items-center gap-1.5">
+        <span id="bgmIcon">🎵</span> <span id="bgmText">Music: OFF</span>
+      </button>
+      <button onclick="toggleSfx()" id="sfxBtn" class="brutalist-btn bg-[#E3B778] px-3 py-1.5 rounded-xl font-bold text-xs uppercase flex items-center gap-1.5">
+        <span id="sfxIcon">🔊</span> SFX: ON
+      </button>
+      <button onclick="triggerMascotHoot()" class="brutalist-btn bg-[#D4A5A5] text-[#2D3748] px-3 py-1.5 rounded-xl font-bold text-xs uppercase">
+        🦉 Hoot!
+      </button>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto space-y-8">
+
+    <!-- TOP HEADER -->
+    <header class="brutalist-card-lg bg-white p-6 md:p-8 rounded-3xl relative overflow-hidden">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
+        <div>
+          <div class="flex items-center gap-2.5 flex-wrap mb-2.5">
+            <span class="px-3 py-0.5 bg-[#81A296] text-white brutalist-border-sm font-bold text-[11px] uppercase tracking-wide rounded-full">v4.5 Live Intelligence</span>
+            <span class="px-3 py-0.5 bg-[#FAF8F5] brutalist-border-sm font-bold text-[11px] uppercase tracking-wide rounded-full flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-[#81A296]"></span> Official Multilateral Connectors
+            </span>
+            <span class="px-3 py-0.5 bg-[#8E9AAF] text-white brutalist-border-sm font-bold text-[11px] uppercase tracking-wide rounded-full">13-Year Time Horizon</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold uppercase tracking-tight text-[#2D3748]">
+            EduVerse Ultra <span class="text-[#D4A5A5]">Intelligence</span>
+          </h1>
+          <p class="font-medium text-sm md:text-base text-gray-700 mt-2 max-w-2xl leading-relaxed">
+            A comprehensive comparative policy and micro-economic intelligence laboratory comparing Indian education frameworks with Nordic public benchmarks (Finland, Sweden, Norway, Denmark).
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 w-full lg:w-auto">
+          <a href="#ribbonSection" onclick="playSfx('click')" class="brutalist-btn bg-[#81A296] text-white px-3 py-2 rounded-xl font-bold text-xs uppercase text-center">🌊 Ribbon & Year Insights</a>
+          <a href="#policySimSection" onclick="playSfx('click')" class="brutalist-btn bg-[#E3B778] px-3 py-2 rounded-xl font-bold text-xs uppercase text-center">🎮 Policy Lab 2030</a>
+          <a href="#chatbotSection" onclick="playSfx('click')" class="brutalist-btn bg-[#FAF8F5] px-3 py-2 rounded-xl font-bold text-xs uppercase text-center">🤖 50 AI Prompts</a>
+          <a href="#newsSection" onclick="playSfx('click')" class="brutalist-btn bg-[#D4A5A5] px-3 py-2 rounded-xl font-bold text-xs uppercase text-center">📰 News & Sim</a>
+          <a href="#sourcesHubSection" onclick="playSfx('click')" class="brutalist-btn bg-[#8E9AAF] text-white px-3 py-2 rounded-xl font-bold text-xs uppercase text-center">📚 Data Sources Hub</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- SECTION 1: RIBBON FLOW WITH ALL YEARS, INSPECTOR & LIVE YEAR-SPECIFIC INSIGHTS -->
+    <section id="ribbonSection" class="brutalist-card p-6 md:p-8 rounded-3xl space-y-5">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b-2 border-gray-200 pb-4">
+        <div>
+          <span class="px-3 py-1 bg-[#81A296] text-white brutalist-border-sm font-bold text-xs uppercase rounded-full">Stream Volume Analyzer</span>
+          <h2 class="text-2xl font-black uppercase mt-2">Ribbon Flow: Sector Funding Stream (2014 - 2026)</h2>
+          <p class="text-xs sm:text-sm font-medium text-gray-600">Inspect historical stream flows across all 13 years with interactive comparative overlay views.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="toggleRibbonMode('stacked')" class="brutalist-btn bg-[#FAF8F5] px-3 py-1.5 rounded-xl font-bold text-xs uppercase">Stacked Flow</button>
+          <button onclick="toggleRibbonMode('stream')" class="brutalist-btn bg-[#E3B778] px-3 py-1.5 rounded-xl font-bold text-xs uppercase">Stepped Trend</button>
+        </div>
+      </div>
+
+      <!-- Ribbon Customization Filters -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-[#FAF8F5] p-4 rounded-2xl brutalist-border-sm">
+        <div>
+          <label class="block font-bold text-xs uppercase mb-1 text-gray-700">Target Country Stream</label>
+          <select id="ribbonCountrySelect" onchange="updateRibbonData()" class="w-full brutalist-border-sm bg-white p-2 font-bold text-xs rounded-xl outline-none cursor-pointer">
+            <option value="IND" selected>🇮🇳 India</option>
+            <option value="FIN">🇫🇮 Finland</option>
+            <option value="SWE">🇸🇪 Sweden</option>
+            <option value="NOR">🇳🇴 Norway</option>
+            <option value="DNK">🇩🇰 Denmark</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-xs uppercase mb-1 text-gray-700">Compare With Benchmark</label>
+          <select id="ribbonCompareSelect" onchange="updateRibbonData()" class="w-full brutalist-border-sm bg-white p-2 font-bold text-xs rounded-xl outline-none cursor-pointer">
+            <option value="NONE">❌ Standalone (Single Country)</option>
+            <option value="FIN" selected>🇫🇮 Finland Overlay</option>
+            <option value="SWE">🇸🇪 Sweden Overlay</option>
+            <option value="NOR">🇳🇴 Norway Overlay</option>
+            <option value="DNK">🇩🇰 Denmark Overlay</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-xs uppercase mb-1 text-gray-700">Inspect Exact Year Point</label>
+          <select id="ribbonYearPointSelect" onchange="inspectRibbonYear()" class="w-full brutalist-border-sm bg-[#E3B778]/30 p-2 font-bold text-xs rounded-xl outline-none cursor-pointer">
+            <option value="2014">2014</option>
+            <option value="2015">2015</option>
+            <option value="2016">2016</option>
+            <option value="2017">2017</option>
+            <option value="2018">2018</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020 (NEP Rollout)</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026 (Projected Review)</option>
+          </select>
+        </div>
+
+        <div class="flex items-center justify-center">
+          <div id="ribbonYearMetricCard" class="w-full bg-white p-2.5 rounded-xl brutalist-border-sm text-center">
+            <span class="text-[10px] font-bold uppercase text-gray-500 block" id="ribbonInspectYearLabel">2026 Snapshot</span>
+            <span id="ribbonInspectValues" class="text-xs font-black text-[#81A296]">Govt: 4.8% | Pvt: 3.9% | OOPE: 44.2%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="h-[340px] w-full pt-1">
+        <canvas id="ribbonFlowChart"></canvas>
+      </div>
+
+      <!-- LIVE INSIGHTS FOR THE CHOSEN YEAR & COUNTRY PAIR -->
+      <div id="liveYearInsightCard" class="brutalist-card bg-[#FAF8F5] p-5 rounded-2xl space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-300 pb-2.5">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 bg-[#81A296] text-white text-[11px] font-bold uppercase rounded-md">Live Year Analytics</span>
+            <h3 id="yearInsightHeading" class="text-sm font-extrabold uppercase text-[#2D3748]">
+              2026 Macro Analysis: India vs. Finland
+            </h3>
+          </div>
+          <span id="yearInsightDeltaPill" class="text-xs font-bold px-2.5 py-1 bg-white border border-[#2D3748] rounded-lg">
+            Spending Gap: -1.5% GDP
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
+          <div class="bg-white p-3.5 rounded-xl border border-gray-300 space-y-1">
+            <span class="text-[10px] font-bold uppercase text-gray-500 block">1. Historical Context</span>
+            <p id="yearInsightContext" class="font-medium text-gray-700 leading-relaxed">
+              In 2026, India reaches a 6-year milestone since NEP 2020 adoption, expanding vocational credit adoption while public spending hovers around ~4.8% of GDP.
+            </p>
+          </div>
+
+          <div class="bg-white p-3.5 rounded-xl border border-gray-300 space-y-1">
+            <span class="text-[10px] font-bold uppercase text-gray-500 block">2. Comparative Differential</span>
+            <p id="yearInsightDifferential" class="font-medium text-gray-700 leading-relaxed">
+              Compared to Finland (6.3% public outlay), India displays a persistent gap in state per-student funding, driving household out-of-pocket reliance up to 44.2%.
+            </p>
+          </div>
+
+          <div class="bg-white p-3.5 rounded-xl border border-gray-300 space-y-1">
+            <span class="text-[10px] font-bold uppercase text-gray-500 block">3. Policy Takeaway</span>
+            <p id="yearInsightTakeaway" class="font-medium text-gray-700 leading-relaxed">
+              Achieving the NEP 6% GDP target in this cycle requires closing the municipal capital expenditure gap and universalizing pre-primary Anganwadi infrastructure.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE POLICY LAB: 🎮 EDUCATEINDIA 2030 POLICY SIMULATOR -->
+    <section id="policySimSection" class="brutalist-card bg-[#FAF8F5] p-6 md:p-8 rounded-3xl space-y-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b-2 border-gray-300 pb-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2.5 py-0.5 bg-[#E3B778] text-[#2D3748] brutalist-border-sm font-bold text-[11px] uppercase rounded-md">
+              Interactive Policy Lab
+            </span>
+            <span class="text-xs font-bold uppercase text-gray-500">Simulate National Outcome</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-[#2D3748]">
+            🎮 EducateIndia 2030 Policy Simulator
+          </h2>
+        </div>
+        <button onclick="resetPolicyEngine2030()" class="brutalist-btn bg-white px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase">
+          Reset Levers ⟲
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Controls Column (7 cols) -->
+        <div class="lg:col-span-7 bg-white p-5 sm:p-6 rounded-2xl brutalist-border-sm space-y-5">
+          <h3 class="text-xs font-bold uppercase text-gray-500 tracking-wider border-b border-gray-200 pb-2 flex justify-between items-center">
+            <span>Macro Fiscal & Structural Levers</span>
+            <span>Real-time Elasticity</span>
+          </h3>
+
+          <!-- Lever 1 -->
+          <div>
+            <div class="flex justify-between font-bold text-xs uppercase mb-1">
+              <span>Public Education Outlay (% of GDP)</span>
+              <span id="polBudgetVal" class="text-[#81A296] font-black">4.5%</span>
+            </div>
+            <input type="range" id="polBudgetSlider" min="2.0" max="8.0" step="0.1" value="4.5" oninput="runPolicyEngine2030()" class="w-full">
+            <div class="flex justify-between text-[10px] font-medium text-gray-500 mt-1">
+              <span>2.0% (Underfunded)</span>
+              <span>NEP Target: 6.0%</span>
+              <span>8.0% (Nordic Standard)</span>
+            </div>
+          </div>
+
+          <!-- Lever 2 -->
+          <div>
+            <div class="flex justify-between font-bold text-xs uppercase mb-1">
+              <span>Vocational TVET Credit Integration Share</span>
+              <span id="polVocVal" class="text-[#E3B778] font-black">30%</span>
+            </div>
+            <input type="range" id="polVocSlider" min="5" max="75" step="1" value="30" oninput="runPolicyEngine2030()" class="w-full">
+            <div class="flex justify-between text-[10px] font-medium text-gray-500 mt-1">
+              <span>5% (Status Quo)</span>
+              <span>35% (NEP Target)</span>
+              <span>65% (Danish Dual Standard)</span>
+            </div>
+          </div>
+
+          <!-- Lever 3 -->
+          <div>
+            <div class="flex justify-between font-bold text-xs uppercase mb-1">
+              <span>Teacher Professionalization & Pay Multiplier</span>
+              <span id="polTeacherVal" class="text-[#8E9AAF] font-black">1.2x</span>
+            </div>
+            <input type="range" id="polTeacherSlider" min="0.8" max="2.5" step="0.1" value="1.2" oninput="runPolicyEngine2030()" class="w-full">
+            <div class="flex justify-between text-[10px] font-medium text-gray-500 mt-1">
+              <span>0.8x (Contract Para-Grade)</span>
+              <span>1.5x (Civil Benchmark)</span>
+              <span>2.5x (Finnish Master's Grade)</span>
+            </div>
+          </div>
+
+          <!-- Lever 4 -->
+          <div>
+            <div class="flex justify-between font-bold text-xs uppercase mb-1">
+              <span>Universal Early Childhood (ECCE) Coverage</span>
+              <span id="polEcceVal" class="text-[#D4A5A5] font-black">45%</span>
+            </div>
+            <input type="range" id="polEcceSlider" min="20" max="100" step="5" value="45" oninput="runPolicyEngine2030()" class="w-full">
+            <div class="flex justify-between text-[10px] font-medium text-gray-500 mt-1">
+              <span>20% (Minimal)</span>
+              <span>60% (Anganwadi Upgrade)</span>
+              <span>100% (Full Universalization)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulation Projections Column (5 cols) -->
+        <div class="lg:col-span-5 flex flex-col justify-between gap-4">
+          <div class="grid grid-cols-2 gap-3.5">
+            <div class="bg-white brutalist-border-sm p-4 rounded-2xl text-center">
+              <span class="text-[10px] font-bold uppercase text-gray-500 block">Youth Employability</span>
+              <p id="outPolEmploy" class="text-2xl sm:text-3xl font-black text-[#81A296] mt-1">56 / 100</p>
+              <span id="badgePolEmploy" class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded border border-[#2D3748] bg-[#FAF8F5]">
+                Moderate
+              </span>
+            </div>
+
+            <div class="bg-white brutalist-border-sm p-4 rounded-2xl text-center">
+              <span class="text-[10px] font-bold uppercase text-gray-500 block">Projected Youth NEET</span>
+              <p id="outPolNeet" class="text-2xl sm:text-3xl font-black text-[#D4A5A5] mt-1">26.1%</p>
+              <span id="badgePolNeet" class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded border border-[#2D3748] bg-[#FAF8F5]">
+                Elevated
+              </span>
+            </div>
+
+            <div class="bg-white brutalist-border-sm p-4 rounded-2xl text-center">
+              <span class="text-[10px] font-bold uppercase text-gray-500 block">Household Out-Of-Pocket</span>
+              <p id="outPolBurden" class="text-xl sm:text-2xl font-black text-[#E3B778] mt-1.5">Moderate</p>
+              <span class="text-[10px] font-semibold text-gray-500 block mt-0.5">Tutoring Burden</span>
+            </div>
+
+            <div class="bg-white brutalist-border-sm p-4 rounded-2xl text-center">
+              <span class="text-[10px] font-bold uppercase text-gray-500 block">Fiscal Strain Index</span>
+              <p id="outPolFiscal" class="text-xl sm:text-2xl font-black text-[#8E9AAF] mt-1.5">Sustainable</p>
+              <span class="text-[10px] font-semibold text-gray-500 block mt-0.5">Debt Feasible</span>
+            </div>
+          </div>
+
+          <div class="bg-white brutalist-border-sm p-4 rounded-2xl">
+            <div class="flex items-center gap-2 mb-1.5">
+              <span class="text-base">🦉</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#2D3748]">Prof. Owlsley's Policy Diagnostic</span>
+            </div>
+            <p id="outPolVerdict" class="text-xs font-medium text-gray-700 leading-relaxed">
+              Steady incremental progress. Increasing teacher pay incentives and vocational TVET integration will compress NEET rates toward Nordic standards.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: AI TUTOR WITH 50 QUICK PROMPTS & SEARCHABLE MODAL -->
+    <section id="chatbotSection" class="brutalist-card bg-[#FAF8F5] p-6 md:p-8 rounded-3xl space-y-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b-2 border-gray-300 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-white rounded-2xl brutalist-border-sm p-1.5 flex items-center justify-center shrink-0">
+            <svg class="w-9 h-9 animate-owl" viewBox="0 0 24 24" fill="none" stroke="#2D3748" stroke-width="2">
+              <path d="M12 2C8 2 5 5 5 9v11c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V9c0-4-3-7-7-7z" fill="#8E9AAF"/>
+              <circle class="owl-eye" cx="9" cy="9" r="2.5" fill="#FFF"/><circle class="owl-eye" cx="15" cy="9" r="2.5" fill="#FFF"/>
+              <circle cx="9" cy="9" r="1" fill="#2D3748"/><circle cx="15" cy="9" r="1" fill="#2D3748"/>
+              <path d="M12 12l-1.5 3h3L12 12z" fill="#E3B778"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-white brutalist-border-sm font-bold text-[10px] uppercase rounded">Module B</span>
+              <span class="px-2 py-0.5 bg-[#81A296] text-white font-bold text-[10px] uppercase rounded">50 Curated Prompts Library</span>
+            </div>
+            <h2 class="text-2xl font-extrabold uppercase mt-1">Prof. Owlsley AI Tutor & Knowledge Engine</h2>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="toggleAllPromptsModal()" class="brutalist-btn bg-[#E3B778] px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase">Browse All 50 Prompts 📚</button>
+          <button onclick="clearChatLog()" class="brutalist-btn bg-white px-3 py-1.5 rounded-xl font-bold text-xs uppercase">Clear Log</button>
+        </div>
+      </div>
+
+      <!-- Category Filterable Prompts Bar -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-xs uppercase text-gray-500">Select Prompt Category:</span>
+          <select id="promptCategoryFilter" onchange="renderPromptChips()" class="bg-white brutalist-border-sm px-2 py-1 rounded-lg text-xs font-bold outline-none cursor-pointer">
+            <option value="ALL">All Categories (50 Prompts)</option>
+            <option value="NEP">NEP 2020 & Policy Directives</option>
+            <option value="ECON">Public vs. Private Unit Economics</option>
+            <option value="NORDIC">Nordic & Finnish Frameworks</option>
+            <option value="TVET">Vocational & Youth NEET</option>
+            <option value="FISCAL">Teacher Pay, Budgets & ROI</option>
+          </select>
+        </div>
+        <div id="quickPromptChipsContainer" class="flex items-center gap-2 overflow-x-auto pb-2">
+          <!-- Populated Dynamically in JS -->
+        </div>
+      </div>
+
+      <!-- Chat Log Box -->
+      <div class="brutalist-card bg-white p-4 md:p-6 rounded-2xl h-80 overflow-y-auto space-y-4" id="chatLog">
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-[#E3B778] brutalist-border-sm flex items-center justify-center font-bold text-xs shrink-0">🦉</div>
+          <div class="bg-[#FAF8F5] p-3.5 rounded-2xl brutalist-border-sm max-w-2xl">
+            <p class="font-bold text-[11px] uppercase text-[#81A296] mb-1">Prof. Owlsley (AI Tutor)</p>
+            <p class="text-xs font-medium text-gray-800 leading-relaxed">
+              Hoot! Click any of the 50 curated prompts above or ask custom queries about Indian and Nordic education models!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Input Field -->
+      <div class="flex gap-2">
+        <input type="text" id="chatInput" onkeydown="if(event.key==='Enter') sendChatMessage()" placeholder="Type custom query or click a prompt above..." class="w-full brutalist-border-sm bg-white p-3 rounded-2xl font-semibold text-xs outline-none">
+        <button onclick="sendChatMessage()" class="brutalist-btn bg-[#81A296] text-white px-6 py-3 rounded-2xl font-bold text-xs uppercase shrink-0">Send 🚀</button>
+      </div>
+    </section>
+
+    <!-- SECTION 3: MONTHLY NEWS TICKER (TOP 10 PER MONTH) & ENHANCED MACRO SIMULATOR -->
+    <section id="newsSection" class="brutalist-card bg-white p-6 md:p-8 rounded-3xl space-y-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b-2 border-gray-200 pb-4">
+        <div>
+          <span class="px-2.5 py-0.5 bg-[#D4A5A5] text-[#2D3748] brutalist-border-sm font-bold text-[11px] uppercase rounded-md">Module C</span>
+          <h2 class="text-2xl md:text-3xl font-extrabold uppercase mt-1">Monthly Education Policy Dispatch & Impact Laboratory</h2>
+          <p class="font-medium text-xs text-gray-500">Filter top 10 policy developments by calendar month and study targeted macroeconomic repercussions.</p>
+        </div>
+        
+        <!-- Month Selector Dropdown -->
+        <div class="flex items-center gap-2">
+          <label class="font-bold text-xs uppercase text-gray-600">Month Archive:</label>
+          <select id="newsMonthSelector" onchange="onNewsMonthChange()" class="brutalist-border-sm bg-[#FAF8F5] p-2 rounded-xl text-xs font-bold outline-none cursor-pointer">
+            <option value="OCT_2026" selected>October 2026 (NEP 6-Year Review)</option>
+            <option value="FEB_2026">February 2026 (Union Budget Session)</option>
+            <option value="NOV_2025">November 2025 (Nordic TVET Accord)</option>
+            <option value="MAY_2025">May 2025 (Exam & Coaching Fee Audit)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left: News Feed List (7 cols) -->
+        <div class="lg:col-span-7 space-y-3" id="monthlyNewsContainer">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <!-- Right: Enhanced Macro Simulator Dashboard (5 cols) -->
+        <div class="lg:col-span-5 brutalist-card bg-[#FAF8F5] p-5 rounded-2xl space-y-4">
+          <div class="border-b-2 border-gray-300 pb-2">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-[10px] font-bold uppercase bg-[#E3B778] px-2 py-0.5 rounded border border-[#2D3748]">Simulator Lens</span>
+              <span id="activeEventBadge" class="text-[10px] font-bold text-gray-500">Event: None Selected</span>
+            </div>
+            <label class="block font-bold text-xs uppercase text-gray-700 mb-1">Focus Analytical Lens:</label>
+            <select id="simLensSelector" onchange="renderMacroSimulationReaction()" class="w-full brutalist-border-sm bg-white p-2 font-bold text-xs rounded-xl outline-none cursor-pointer">
+              <option value="LABOR" selected>1. Labor Market & Youth NEET Shock</option>
+              <option value="FISCAL">2. Sovereign Fiscal Deficit & Debt Load</option>
+              <option value="HOUSEHOLD">3. Household OOPE & Private Tutoring Burden</option>
+              <option value="QUALITY">4. Foundational Quality & Teacher Ratio Elasticity</option>
+            </select>
+          </div>
+
+          <!-- Multi-Impact Reactive Meters -->
+          <div class="space-y-3.5" id="macroMetersContainer">
+            <div>
+              <div class="flex justify-between text-xs font-bold uppercase mb-1">
+                <span id="metric1Name">Youth NEET Compression</span>
+                <span id="metric1Val" class="text-[#81A296] font-black">24.2%</span>
+              </div>
+              <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden p-0.5 border border-[#2D3748]">
+                <div id="metric1Bar" class="bg-[#81A296] h-full rounded-full transition-all duration-500" style="width: 55%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-bold uppercase mb-1">
+                <span id="metric2Name">Graduate Employability Score</span>
+                <span id="metric2Val" class="text-[#E3B778] font-black">58 / 100</span>
+              </div>
+              <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden p-0.5 border border-[#2D3748]">
+                <div id="metric2Bar" class="bg-[#E3B778] h-full rounded-full transition-all duration-500" style="width: 58%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-bold uppercase mb-1">
+                <span id="metric3Name">Household OOPE Burden Index</span>
+                <span id="metric3Val" class="text-[#D4A5A5] font-black">46.8% (Elevated)</span>
+              </div>
+              <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden p-0.5 border border-[#2D3748]">
+                <div id="metric3Bar" class="bg-[#D4A5A5] h-full rounded-full transition-all duration-500" style="width: 70%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-bold uppercase mb-1">
+                <span id="metric4Name">Fiscal Feasibility Index</span>
+                <span id="metric4Val" class="text-[#8E9AAF] font-black">Sustainable</span>
+              </div>
+              <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden p-0.5 border border-[#2D3748]">
+                <div id="metric4Bar" class="bg-[#8E9AAF] h-full rounded-full transition-all duration-500" style="width: 65%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 bg-white rounded-xl brutalist-border-sm text-xs font-semibold" id="simDiagnosticNote">
+            💡 Select any news card on the left to inject its fiscal or labor shock into this model.
+          </div>
+
+          <button onclick="resetMacroSimulation()" class="w-full brutalist-btn bg-[#2D3748] text-white py-2 rounded-xl font-bold text-xs uppercase text-center">
+            Reset Macro Parameters
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: LIVE & INTERACTIVE PUBLIC VS. PRIVATE ECONOMIC SIMULATOR -->
+    <section id="publicPrivateSection" class="brutalist-card bg-white p-6 md:p-8 rounded-3xl space-y-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b-2 border-gray-200 pb-4">
+        <div>
+          <span class="px-2.5 py-0.5 bg-[#8E9AAF] text-white brutalist-border-sm font-bold text-[11px] uppercase rounded-md">Live Micro-Economic Engine</span>
+          <h2 class="text-2xl md:text-3xl font-extrabold uppercase mt-1">⚖️ Public vs. Private Unit Economics Simulator</h2>
+          <p class="font-medium text-xs text-gray-500">Live parametric model comparing 4-year degree costs, shadow tuition expenditure, payback period, and wage return.</p>
+        </div>
+        <button onclick="resetEconomicsSimulator()" class="brutalist-btn bg-[#FAF8F5] px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase">Reset Levers</button>
+      </div>
+
+      <!-- Simulator Inputs -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-[#FAF8F5] p-5 rounded-2xl brutalist-border-sm">
+        <div>
+          <label class="block font-bold text-xs uppercase mb-1 text-gray-700">Degree Field</label>
+          <select id="econDegreeField" onchange="runEconomicsModel()" class="w-full brutalist-border-sm bg-white p-2 font-bold text-xs rounded-xl outline-none cursor-pointer">
+            <option value="ENG" selected>B.Tech / STEM Engineering</option>
+            <option value="MED">MBBS / Healthcare Medicine</option>
+            <option value="MGMT">MBA / Business Administration</option>
+            <option value="HUM">BA / Humanities & Basic Sciences</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-xs uppercase mb-1 text-gray-700">Institution Location Tier</label>
+          <select id="econTierSelect" onchange="runEconomicsModel()" class="w-full brutalist-border-sm bg-white p-2 font-bold text-xs rounded-xl outline-none cursor-pointer">
+            <option value="TIER1" selected>Tier-1 Metro (Delhi, Bengaluru, Mumbai)</option>
+            <option value="TIER2">Tier-2 / Tier-3 Regional Center</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-xs uppercase mb-1 text-gray-700">Private Coaching / Prep: <span id="coachingYearsVal" class="text-[#81A296] font-black">2 Years</span></label>
+          <input type="range" id="econCoachingYears" min="0" max="4" step="1" value="2" oninput="runEconomicsModel()" class="w-full mt-2">
+        </div>
+
+        <div>
+          <label class="block font-bold text-xs uppercase mb-1 text-gray-700">Govt Scholarship Subsidy: <span id="scholarshipVal" class="text-[#E3B778] font-black">25%</span></label>
+          <input type="range" id="econScholarship" min="0" max="100" step="5" value="25" oninput="runEconomicsModel()" class="w-full mt-2">
+        </div>
+      </div>
+
+      <!-- Live Calculated Output Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="brutalist-card bg-[#FAF8F5] p-4 rounded-2xl text-center">
+          <p class="font-bold text-[10px] uppercase text-gray-500">4-Year Public Cost</p>
+          <p id="calcPubCost" class="text-2xl font-black text-[#81A296] mt-1">₹1,80,000</p>
+          <p class="text-[10px] font-medium text-gray-500 mt-1">Subsidized state expenditure</p>
+        </div>
+
+        <div class="brutalist-card bg-[#FAF8F5] p-4 rounded-2xl text-center">
+          <p class="font-bold text-[10px] uppercase text-gray-500">4-Year Private Cost</p>
+          <p id="calcPriCost" class="text-2xl font-black text-[#D4A5A5] mt-1">₹11,20,000</p>
+          <p class="text-[10px] font-medium text-gray-500 mt-1">Tuition + Campus Facility fees</p>
+        </div>
+
+        <div class="brutalist-card bg-[#FAF8F5] p-4 rounded-2xl text-center">
+          <p class="font-bold text-[10px] uppercase text-gray-500">Estimated Payback Period</p>
+          <p id="calcPayback" class="text-xl font-black text-[#E3B778] mt-1">Public: 1.1y | Pvt: 4.8y</p>
+          <p class="text-[10px] font-medium text-gray-500 mt-1">At average graduate starting salary</p>
+        </div>
+
+        <div class="brutalist-card bg-[#FAF8F5] p-4 rounded-2xl text-center">
+          <p class="font-bold text-[10px] uppercase text-gray-500">Shadow Coaching Spend</p>
+          <p id="calcCoachingCost" class="text-2xl font-black text-[#8E9AAF] mt-1">₹2,40,000</p>
+          <p class="text-[10px] font-medium text-gray-500 mt-1">Out-of-Pocket entrance test prep</p>
+        </div>
+      </div>
+
+      <!-- Live Dynamic Comparison Chart -->
+      <div class="h-72 w-full pt-2">
+        <canvas id="liveEconomicsChart"></canvas>
+      </div>
+    </section>
+
+    <!-- SECTION 5: NORDIC VS. INDIA MULTI-MATRIX BENCHMARKING ENGINE (100% VISUAL) -->
+    <section id="visualMatrixSection" class="brutalist-card bg-white p-6 md:p-8 rounded-3xl space-y-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b-2 border-gray-200 pb-4">
+        <div>
+          <span class="px-2.5 py-0.5 bg-[#81A296] text-white brutalist-border-sm font-bold text-[11px] uppercase rounded-md">Visual Benchmark Grid</span>
+          <h2 class="text-2xl md:text-3xl font-extrabold uppercase mt-1">🌐 Visual Multi-Matrix Benchmarking Engine</h2>
+          <p class="font-medium text-xs text-gray-500">10 macro policy pillars represented as comparative gauges and normalized radar spectrums.</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="switchVisualMatrixView('radar')" id="matrixBtnRadar" class="brutalist-btn bg-[#FAF8F5] px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase">Radar Overview</button>
+          <button onclick="switchVisualMatrixView('gauges')" id="matrixBtnGauges" class="brutalist-btn bg-[#81A296] text-white px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase">Pillar Gauges (10)</button>
+        </div>
+      </div>
+
+      <!-- View 1: 10 Pillar Visual Cards / Lollipop Gauges -->
+      <div id="visualMatrixGaugesView" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Dynamically Rendered via JS -->
+      </div>
+
+      <!-- View 2: High-Density Comparative Radar Spectrum -->
+      <div id="visualMatrixRadarView" class="hidden brutalist-card bg-[#FAF8F5] p-5 rounded-2xl">
+        <h3 class="font-bold text-sm uppercase mb-2 text-center text-[#2D3748]">Normalized 10-Pillar Policy Performance Radar (0 - 100 Scale)</h3>
+        <div class="h-96 w-full">
+          <canvas id="matrixRadarCanvas"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: SOURCES, METHODOLOGIES & OPEN API GATEWAYS HUB -->
+    <section id="sourcesHubSection" class="brutalist-card bg-[#FAF8F5] p-6 md:p-8 rounded-3xl space-y-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b-2 border-gray-300 pb-4">
+        <div>
+          <span class="px-2.5 py-0.5 bg-[#8E9AAF] text-white brutalist-border-sm font-bold text-[11px] uppercase rounded-md">Data Transparency</span>
+          <h2 class="text-2xl md:text-3xl font-extrabold uppercase mt-1 text-[#2D3748]">📚 Official Open Data Sources & API Hub</h2>
+          <p class="font-medium text-xs text-gray-600">All historical time-series indicators and comparative baselines are audited against official multilateral open data portals.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="downloadCitationPackage()" class="brutalist-btn bg-white px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase">📥 Download Citation Package</button>
+        </div>
+      </div>
+
+      <!-- Searchable & Filterable Data Sources Catalog -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Source 1 -->
+        <div class="brutalist-card bg-white p-4 rounded-2xl flex flex-col justify-between space-y-3">
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#81A296]/20 text-[#2D3748] uppercase">Multilateral API</span>
+              <span class="text-[10px] font-bold text-emerald-700">REST v2 Active</span>
+            </div>
+            <h3 class="font-bold text-sm uppercase text-[#2D3748]">World Bank Open Data API</h3>
+            <p class="text-xs text-gray-600 font-medium mt-1">Official time-series metrics including Public Education Spend (% GDP), Youth NEET Rate, and Pupil-Teacher ratios.</p>
+            <div class="mt-2 text-[10px] font-mono bg-gray-100 p-2 rounded border border-gray-300 break-all">
+              https://api.worldbank.org/v2/country/{code}/indicator/SE.XPD.TOTL.GD.ZS?format=json
+            </div>
+          </div>
+          <a href="https://data.worldbank.org/indicator" target="_blank" class="brutalist-btn bg-[#FAF8F5] py-1.5 px-3 rounded-xl text-center text-xs font-bold uppercase block hover:bg-[#81A296] hover:text-white">
+            Visit World Bank Portal ↗
+          </a>
+        </div>
+
+        <!-- Source 2 -->
+        <div class="brutalist-card bg-white p-4 rounded-2xl flex flex-col justify-between space-y-3">
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#E3B778]/30 text-[#2D3748] uppercase">Global Repository</span>
+              <span class="text-[10px] font-bold text-emerald-700">Open Access</span>
+            </div>
+            <h3 class="font-bold text-sm uppercase text-[#2D3748]">UNESCO Institute for Statistics (UIS)</h3>
+            <p class="text-xs text-gray-600 font-medium mt-1">Harmonized international datasets covering household Out-of-Pocket Expenditure (OOPE) and Tertiary Gross Enrollment (GER).</p>
+            <div class="mt-2 text-[10px] font-mono bg-gray-100 p-2 rounded border border-gray-300 break-all">
+              https://databrowser.uis.unesco.org/api/v1/data
+            </div>
+          </div>
+          <a href="https://uis.unesco.org/" target="_blank" class="brutalist-btn bg-[#FAF8F5] py-1.5 px-3 rounded-xl text-center text-xs font-bold uppercase block hover:bg-[#E3B778]">
+            Visit UNESCO UIS Portal ↗
+          </a>
+        </div>
+
+        <!-- Source 3 -->
+        <div class="brutalist-card bg-white p-4 rounded-2xl flex flex-col justify-between space-y-3">
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#D4A5A5]/30 text-[#2D3748] uppercase">Govt of India</span>
+              <span class="text-[10px] font-bold text-emerald-700">Periodic PLFS</span>
+            </div>
+            <h3 class="font-bold text-sm uppercase text-[#2D3748]">MoSPI Periodic Labour Force Survey</h3>
+            <p class="text-xs text-gray-600 font-medium mt-1">Annual national survey data tracking youth unemployment, formal vs. informal vocational certifications, and state-level NEET shares.</p>
+            <div class="mt-2 text-[10px] font-mono bg-gray-100 p-2 rounded border border-gray-300 break-all">
+              https://www.mospi.gov.in/periodic-labour-force-survey
+            </div>
+          </div>
+          <a href="https://www.mospi.gov.in/" target="_blank" class="brutalist-btn bg-[#FAF8F5] py-1.5 px-3 rounded-xl text-center text-xs font-bold uppercase block hover:bg-[#D4A5A5]">
+            Visit MoSPI Reports ↗
+          </a>
+        </div>
+
+        <!-- Source 4 -->
+        <div class="brutalist-card bg-white p-4 rounded-2xl flex flex-col justify-between space-y-3">
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#8E9AAF]/30 text-[#2D3748] uppercase">Public Budgets</span>
+              <span class="text-[10px] font-bold text-emerald-700">Union & State Data</span>
+            </div>
+            <h3 class="font-bold text-sm uppercase text-[#2D3748]">Open Budgets India (CBGA)</h3>
+            <p class="text-xs text-gray-600 font-medium mt-1">Disaggregated spending analysis for Samagra Shiksha Abhiyan, PM-SHRI allocations, and State Demand for Grants.</p>
+            <div class="mt-2 text-[10px] font-mono bg-gray-100 p-2 rounded border border-gray-300 break-all">
+              https://openbudgetsindia.org/api/3/action/package_search
+            </div>
+          </div>
+          <a href="https://openbudgetsindia.org/" target="_blank" class="brutalist-btn bg-[#FAF8F5] py-1.5 px-3 rounded-xl text-center text-xs font-bold uppercase block hover:bg-[#8E9AAF] hover:text-white">
+            Explore Open Budgets ↗
+          </a>
+        </div>
+
+        <!-- Source 5 -->
+        <div class="brutalist-card bg-white p-4 rounded-2xl flex flex-col justify-between space-y-3">
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#81A296]/20 text-[#2D3748] uppercase">NITI Aayog</span>
+              <span class="text-[10px] font-bold text-emerald-700">UDISE+ Connected</span>
+            </div>
+            <h3 class="font-bold text-sm uppercase text-[#2D3748]">NITI Aayog NDAP Platform</h3>
+            <p class="text-xs text-gray-600 font-medium mt-1">National Data & Analytics Platform tracking district-level student-teacher ratios, electricity access, and broadband connectivity in schools.</p>
+            <div class="mt-2 text-[10px] font-mono bg-gray-100 p-2 rounded border border-gray-300 break-all">
+              https://ndap.niti.gov.in/api/v1/datasets
+            </div>
+          </div>
+          <a href="https://ndap.niti.gov.in/" target="_blank" class="brutalist-btn bg-[#FAF8F5] py-1.5 px-3 rounded-xl text-center text-xs font-bold uppercase block hover:bg-[#81A296] hover:text-white">
+            Visit NITI NDAP ↗
+          </a>
+        </div>
+
+        <!-- Source 6 -->
+        <div class="brutalist-card bg-white p-4 rounded-2xl flex flex-col justify-between space-y-3">
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#E3B778]/30 text-[#2D3748] uppercase">OECD Standards</span>
+              <span class="text-[10px] font-bold text-emerald-700">PISA Benchmarks</span>
+            </div>
+            <h3 class="font-bold text-sm uppercase text-[#2D3748]">OECD Education GPS</h3>
+            <p class="text-xs text-gray-600 font-medium mt-1">Multilateral benchmarks for Finland, Sweden, Norway, and Denmark covering PISA scores, teacher wage parity ratios, and lifelong adult training.</p>
+            <div class="mt-2 text-[10px] font-mono bg-gray-100 p-2 rounded border border-gray-300 break-all">
+              https://gpseducation.oecd.org/data/indicators
+            </div>
+          </div>
+          <a href="https://gpseducation.oecd.org/" target="_blank" class="brutalist-btn bg-[#FAF8F5] py-1.5 px-3 rounded-xl text-center text-xs font-bold uppercase block hover:bg-[#E3B778]">
+            Explore OECD GPS ↗
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODAL FOR ALL 50 PROMPTS -->
+    <div id="allPromptsModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="brutalist-card bg-white w-full max-w-4xl max-h-[85vh] rounded-3xl flex flex-col overflow-hidden">
+        <div class="bg-[#FAF8F5] p-4 border-b-2 border-[#2D3748] flex justify-between items-center">
+          <div>
+            <h3 class="font-black text-lg uppercase">📚 Curated Library of 50 AI Quick Prompts</h3>
+            <p class="text-xs font-semibold text-gray-600">Click any prompt to query Professor Owlsley.</p>
+          </div>
+          <button onclick="toggleAllPromptsModal()" class="w-8 h-8 rounded-full bg-[#D4A5A5] text-[#2D3748] font-bold border-2 border-[#2D3748] flex items-center justify-center">✕</button>
+        </div>
+
+        <div class="p-3 bg-[#FAF8F5] border-b border-gray-300">
+          <input type="text" id="promptSearchInput" onkeyup="filterPromptsInModal()" placeholder="Search prompts by keyword (e.g., PISA, TVET, NEET, fee cap)..." class="w-full bg-white brutalist-border-sm p-2 rounded-xl text-xs font-bold outline-none">
+        </div>
+
+        <div class="p-4 overflow-y-auto space-y-3 flex-1" id="modalPromptsList">
+          <!-- Populated in JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="brutalist-card bg-[#2D3748] text-white p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-semibold">
+      <p>© 2026 EduVerse Ultra Intelligence Platform • Multilateral Data Catalog</p>
+      <div class="flex gap-4">
+        <a href="#ribbonSection" class="hover:text-[#81A296]">Ribbon Flow</a>
+        <a href="#policySimSection" class="hover:text-[#E3B778]">Policy Lab 2030</a>
+        <a href="#chatbotSection" class="hover:text-[#D4A5A5]">50 AI Prompts</a>
+        <a href="#sourcesHubSection" class="hover:text-gray-300">Data Sources Hub</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- JAVASCRIPT LOGIC ENGINE -->
+  <script>
+    /* ==========================================================================
+       1. WEB AUDIO SYNTHESIZER
+       ========================================================================== */
+    let audioCtx = null;
+    let sfxEnabled = true;
+    let bgmEnabled = false;
+    let bgmInterval = null;
+
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    function playSfx(type) {
+      if (!sfxEnabled) return;
+      initAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      const now = audioCtx.currentTime;
+
+      if (type === 'click') {
+        osc.frequency.setValueAtTime(480, now);
+        osc.frequency.exponentialRampToValueAtTime(780, now + 0.07);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.07);
+        osc.start(now);
+        osc.stop(now + 0.07);
+      } else if (type === 'slider') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, now);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.04);
+        osc.start(now);
+        osc.stop(now + 0.04);
+      } else if (type === 'hoot') {
+        osc.frequency.setValueAtTime(580, now);
+        osc.frequency.exponentialRampToValueAtTime(420, now + 0.14);
+        osc.frequency.exponentialRampToValueAtTime(520, now + 0.28);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.28);
+        osc.start(now);
+        osc.stop(now + 0.28);
+      }
+    }
+
+    function toggleSfx() {
+      sfxEnabled = !sfxEnabled;
+      document.getElementById('sfxBtn').innerHTML = sfxEnabled ? '🔊 SFX: ON' : '🔇 SFX: OFF';
+    }
+
+    function toggleBgm() {
+      initAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      bgmEnabled = !bgmEnabled;
+      document.getElementById('bgmIcon').innerText = bgmEnabled ? '🎶' : '🎵';
+      document.getElementById('bgmText').innerText = bgmEnabled ? 'Music: ON' : 'Music: OFF';
+
+      if (bgmEnabled) {
+        let step = 0;
+        const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63];
+        bgmInterval = setInterval(() => {
+          if (!bgmEnabled || !audioCtx) return;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(notes[step % notes.length], audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.16);
+          osc.start(audioCtx.currentTime);
+          osc.stop(audioCtx.currentTime + 0.16);
+          step++;
+        }, 240);
+      } else {
+        if (bgmInterval) clearInterval(bgmInterval);
+      }
+    }
+
+    /* ==========================================================================
+       2. 50 CURATED PROMPTS DATABASE
+       ========================================================================== */
+    const ALL_50_PROMPTS = [
+      { id: 1, cat: "NEP", text: "How close is India to achieving the NEP 2020 target of 6% of GDP allocated to education?", reply: "India currently spends approximately 4.1% - 4.3% of GDP on education across Union and State budgets combined. Achieving 6% requires an incremental fiscal allocation of over ₹2.4 lakh crore annually." },
+      { id: 2, cat: "NEP", text: "Explain the structural difference between the old 10+2 system and NEP’s 5+3+3+4 framework.", reply: "The 5+3+3+4 system officially brings 3 years of early preschool (Anganwadi, ages 3-6) under formal pedagogical oversight with foundational, preparatory, middle, and secondary stages." },
+      { id: 3, cat: "NEP", text: "What are the main fiscal bottlenecks preventing state governments from increasing education budgets?", reply: "Over 78% of state education revenue is absorbed by committed non-plan expenditures—primarily salaries and teacher pensions, limiting capital outlays for laboratories." },
+      { id: 4, cat: "NEP", text: "How does the National Credit Framework (NCrF) equate vocational training with academic credits?", reply: "The NCrF creates a unified credit accumulation and transfer bank (ABC). One credit equals approximately 30 hours of learning, equating academic and vocational hours." },
+      { id: 5, cat: "NEP", text: "What role does Samagra Shiksha play in bridging rural-urban infrastructure disparities?", reply: "Samagra Shiksha operates as a centrally sponsored umbrella program blending SSA and RMSA to provide targeted matching grants for rural composite schools." },
+      { id: 6, cat: "NEP", text: "How does the Union Budget 2026 allocation compare to historical spending over the last 10 years?", reply: "The 2026 budget expands central allocations to approximately ₹1.28 lakh crore, marking a 58% nominal increase over 2016 levels with prioritization for PM-SHRI." },
+      { id: 7, cat: "NEP", text: "What is the Gross Enrolment Ratio (GER) target for Indian higher education by 2035?", reply: "NEP 2020 mandates reaching a 50% Higher Education GER by 2035 (currently near 31%), requiring over 3.5 crore new seats through blended universities." },
+      { id: 8, cat: "NEP", text: "How does the RTE Act enforce primary pupil-teacher ratios across states?", reply: "The Right to Education Act stipulates a statutory ratio of 30:1 for primary schools. While national averages sit near 25:1, localized deficits persist in rural areas." },
+      { id: 9, cat: "NEP", text: "What policy levers are available to reduce the teacher vacancy crisis in government schools?", reply: "Key levers include permanent central-state recruitment scheduling, standardizing TET certification, and transitioning away from ad-hoc contractual para-teachers." },
+      { id: 10, cat: "NEP", text: "How does Anganwadi preschool integration impact foundational literacy and numeracy (FLN)?", reply: "Children exposed to formal play-based ECCE achieve 35% higher phonemic decoding and basic numeracy competence by Grade 2 under NIPUN Bharat audits." },
+      { id: 11, cat: "ECON", text: "Explain the 'Shadow Tutoring Tax' and why Indian families spend up to 28% of income on coaching.", reply: "Because competitive exams test analytical problem-solving beyond ordinary state curricula, parallel coaching has become an unavoidable private tax on households." },
+      { id: 12, cat: "ECON", text: "Compare the 4-year total cost of an engineering degree in a government NIT vs. a private university.", reply: "A 4-year B.Tech at an NIT typically costs between ₹3.5L to ₹5.5L total including hostel, while comparable private institutes cost between ₹12L to ₹24L." },
+      { id: 13, cat: "ECON", text: "What is the return on investment (ROI) and payback period for a private medical degree in India?", reply: "Private MBBS tuition can exceed ₹75L to ₹1.2 Crore. With starting resident stipends near ₹50,000/month, capital payback periods often exceed 11 to 14 years." },
+      { id: 14, cat: "ECON", text: "Why do low-fee private budget schools exhibit high teacher turnover despite lower student ratios?", reply: "Budget private schools typically pay teachers between ₹8,000 and ₹18,000 monthly without retirement benefits, prompting continuous migration to government exams." },
+      { id: 15, cat: "ECON", text: "How does household Out-of-Pocket Expenditure (OOPE) in India compare to the OECD average?", reply: "In India, household OOPE accounts for roughly 48% of total spending on education, compared to less than 15% across OECD economies and under 3% in Nordic countries." },
+      { id: 16, cat: "ECON", text: "What would be the economic impact of introducing strict statutory fee caps on test-prep coaching centers?", reply: "Statutory caps compress excessive margins and relieve urban household stress, but often incentivize cash premiums unless exam difficulty is calibrated." },
+      { id: 17, cat: "ECON", text: "How do state-funded post-matric scholarships alter degree completion rates?", reply: "Direct Benefit Transfer (DBT) post-matric scholarships improve tertiary retention rates by over 24% by directly covering boarding fees." },
+      { id: 18, cat: "ECON", text: "Why has private school enrollment grown despite government schools offering free midday meals?", reply: "Parental perception of English-medium instruction, higher perceived teacher attendance, and aspirational social signaling continue to drive enrollment." },
+      { id: 19, cat: "ECON", text: "What are the hidden costs of public education in India that lead to dropout rates after Grade 8?", reply: "Transportation costs to distant secondary schools, supplementary private tutoring, exam fees, and foregone household wages cause dropouts at age 14." },
+      { id: 20, cat: "ECON", text: "Analyze the wage premium of tier-1 public institutes (IITs/IIMs) versus tier-3 private colleges.", reply: "Graduates of premier public institutions capture starting salaries 110% to 220% higher than the median, while tier-3 private institutions offer marginal premiums." },
+      { id: 21, cat: "NORDIC", text: "What is the core pedagogical reason Finland conducts zero standardized testing before age 18?", reply: "Finland treats assessment as diagnostic rather than competitive. Teachers use classroom formative evaluations, ensuring time is spent on deep critical inquiry." },
+      { id: 22, cat: "NORDIC", text: "How does Denmark’s Folkeskole model integrate social-emotional learning?", reply: "The Danish Folkeskole pairs students with the same cohort and primary teacher for multi-year cycles, emphasizing consensus building and collaborative teamwork." },
+      { id: 23, cat: "NORDIC", text: "Explain the funding model that allows Norway to offer completely tuition-free higher education.", reply: "Norway allocates over 7.3% of GDP to public education funded by progressive taxation and oil dividend sovereign funds, guaranteeing subsidized university seats." },
+      { id: 24, cat: "NORDIC", text: "How does Sweden’s educational voucher system work, and what are its documented pros and cons?", reply: "Sweden introduced school vouchers in 1992 allowing private 'Friskolor' to receive municipality funding, spurring choice but causing slight socioeconomic segregation." },
+      { id: 25, cat: "NORDIC", text: "Why is teacher recruitment in Finland as competitive as medical school entry?", reply: "Primary teaching requires a fully state-funded 5-year Master's degree in pedagogical research. High professional autonomy attracts top 10% graduates." },
+      { id: 26, cat: "NORDIC", text: "How do Nordic countries ensure schools in low-income districts receive more funding?", reply: "Through 'positive discrimination' funding formulas, municipalities assign extra per-pupil funding to schools with lower parental income." },
+      { id: 27, cat: "NORDIC", text: "What is the role of outdoor playtime and physical recess in Finnish primary school performance?", reply: "Finnish law mandates 15 minutes of outdoor free movement for every 45 minutes of classroom instruction, improving attention spans and reducing juvenile anxiety." },
+      { id: 28, cat: "NORDIC", text: "How do Scandinavian countries finance universal early childhood education from age 1?", reply: "State subsidies cap parent kindergarten fees at roughly 10% to 15% of cost, yielding near 97% female labor force participation, which expands the tax base." },
+      { id: 29, cat: "NORDIC", text: "How does Denmark ensure vocational paths carry the same social prestige as university degrees?", reply: "Denmark's dual-system TVET ensures apprentices earn negotiated living stipends while training inside corporations, leading to technical engineering degrees." },
+      { id: 30, cat: "NORDIC", text: "What can India’s NEP 2020 realistically adopt from the Nordic model?", reply: "India can adopt continuous formative assessment clusters, master's pedagogical qualifications for teacher educators, and mandatory enterprise-linked apprenticeships." },
+      { id: 31, cat: "TVET", text: "Why is India’s youth NEET rate (~25%) so much higher than the Nordic average (~6%)?", reply: "India suffers from an acute mismatch between theoretical degree output and practical industrial skill requirements, alongside low female rural labor participation." },
+      { id: 32, cat: "TVET", text: "How does Denmark’s Dual TVET model combine classroom education with paid enterprise apprenticeships?", reply: "Students spend roughly 60% of their 3-year track inside an accredited enterprise receiving a negotiated wage, with 40% in technical vocational colleges." },
+      { id: 33, cat: "TVET", text: "What structural changes are required to remove the social stigma surrounding vocational training in India?", reply: "Establishing seamless academic bridges allowing TVET diploma holders to transfer credits directly into B.Tech/B.Sc programs with apprentice wage protections." },
+      { id: 34, cat: "TVET", text: "Explain how Germany and Finland fund employer stipends for secondary vocational students.", reply: "Chambers of Commerce fund apprentice wages through collective corporate training levies, treating trainee salaries as tax-deductible human capital R&D investments." },
+      { id: 35, cat: "TVET", text: "What impact would a mandatory 30% vocational credit mandate have on Indian youth employability?", reply: "Our macro simulation projects a 16-point surge in graduate employability and an immediate 4.2% reduction in youth NEET rates within 3 academic cycles." },
+      { id: 36, cat: "TVET", text: "Why do female youth in India constitute a disproportionate share of the national NEET population?", reply: "Cultural caregiving responsibilities, lack of safe transit to regional training clusters, and limited female-friendly industrial apprenticeship quotas compress entry." },
+      { id: 37, cat: "TVET", text: "How can ITIs in India modernize curricula for automation and green energy?", reply: "By shifting from legacy manual machining to CNC maintenance, solar photovoltaic installation, and EV battery testing under tripartite industry MoUs." },
+      { id: 38, cat: "TVET", text: "What is the economic cost of youth underemployment to India's annual GDP growth?", reply: "Macroeconomic estimates suggest graduate underemployment and idle NEET capacity drain between 1.2% and 1.8% of potential annual GDP expansion." },
+      { id: 39, cat: "TVET", text: "How do micro-credentialing and modular credits help workers transition away from obsolete roles?", reply: "Modular stackable credits allow mid-career workers to acquire specialized certificates in software quality or advanced fabrication in 8-week bursts." },
+      { id: 40, cat: "TVET", text: "What is the correlation between upper-secondary vocational enrollment and long-term GDP per capita?", reply: "Cross-country data shows economies with over 40% upper-secondary TVET enrollment maintain lower youth unemployment and higher median wage resilience." },
+      { id: 41, cat: "FISCAL", text: "How does teacher compensation relative to national average wage impact PISA test score rankings?", reply: "When teacher salaries match or exceed 1.2x of median tertiary wages, schools attract high-aptitude talent, correlating with top-decile mathematics performance." },
+      { id: 42, cat: "FISCAL", text: "What is the fiscal multiplier effect of investing an additional 1% of GDP into primary education?", reply: "Every ₹1 invested in high-quality foundational primary literacy yields between ₹4.2 and ₹6.8 in future taxable productivity and reduced healthcare spending." },
+      { id: 43, cat: "FISCAL", text: "Explain degree inflation and why graduate unemployment is higher than primary unemployment.", reply: "When degrees proliferate without skill verification, employers inflate credential requirements for entry-level roles, creating high queues of over-educated applicants." },
+      { id: 44, cat: "FISCAL", text: "What are the long-term fiscal trade-offs between education subsidies and unconditional cash transfers?", reply: "Cash transfers provide immediate poverty relief, but public education asset creation produces durable, compounding intergenerational mobility." },
+      { id: 45, cat: "FISCAL", text: "How does universal broadband and digital lab access in schools translate to rural labor productivity?", reply: "Broadband integration democratizes access to national digital libraries (Swayam), compressing the rural-urban technology wage gap by up to 22%." },
+      { id: 46, cat: "FISCAL", text: "What policy mechanisms can curb brain drain among top-tier STEM graduates?", reply: "Creating high-funded national research councils, corporate R&D tax incentives, and public-private incubator grants that match international compensation brackets." },
+      { id: 47, cat: "FISCAL", text: "How does adult lifelong learning participation in Sweden (34%) insulate their economy?", reply: "Sweden's paid study leave allows adults to take leaves at 80% salary to reskill in high-demand green and technical roles, minimizing structural unemployment." },
+      { id: 48, cat: "FISCAL", text: "Why does increasing education spending fail to produce results without structural accountability?", reply: "Without teacher continuous professional development and transparent learning audits (NAS), budgetary expansion dissipates in bureaucratic overhead." },
+      { id: 49, cat: "FISCAL", text: "Analyze the relationship between pupil-teacher ratios and early grade dropout velocity.", reply: "Ratios above 35:1 prevent individual remedial attention for struggling readers, precipitating learning deficits that trigger formal dropouts around Grade 7 to 9." },
+      { id: 50, cat: "FISCAL", text: "What would India's economy look like in 2035 if the national employability index reaches 85/100?", reply: "A national employability score of 85 would add an estimated $1.2 Trillion to industrial and high-value service GDP, curb NEET to single digits, and eliminate shadow tutoring." }
+    ];
+
+    function renderPromptChips() {
+      const cat = document.getElementById('promptCategoryFilter').value;
+      const container = document.getElementById('quickPromptChipsContainer');
+      container.innerHTML = '';
+
+      const filtered = (cat === 'ALL') ? ALL_50_PROMPTS : ALL_50_PROMPTS.filter(p => p.cat === cat);
+
+      filtered.slice(0, 8).forEach(p => {
+        const btn = document.createElement('button');
+        btn.className = "brutalist-btn bg-white hover:bg-[#FAF8F5] px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 text-left truncate max-w-xs";
+        btn.innerText = p.text;
+        btn.onclick = () => selectPromptAndSend(p.text, p.reply);
+        container.appendChild(btn);
+      });
+    }
+
+    function toggleAllPromptsModal() {
+      playSfx('click');
+      const m = document.getElementById('allPromptsModal');
+      m.classList.toggle('hidden');
+      if (!m.classList.contains('hidden')) {
+        populateModalPrompts(ALL_50_PROMPTS);
+      }
+    }
+
+    function populateModalPrompts(list) {
+      const c = document.getElementById('modalPromptsList');
+      c.innerHTML = '';
+      list.forEach(p => {
+        const div = document.createElement('div');
+        div.className = "p-3 bg-white brutalist-border-sm rounded-xl flex justify-between items-center gap-3 hover:bg-[#FAF8F5] transition-colors cursor-pointer";
+        div.onclick = () => {
+          toggleAllPromptsModal();
+          selectPromptAndSend(p.text, p.reply);
+        };
+        div.innerHTML = `
+          <div>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#81A296]/20 text-[#2D3748] uppercase">${p.cat}</span>
+            <p class="font-bold text-xs mt-1 text-gray-800">${p.text}</p>
+          </div>
+          <span class="brutalist-btn bg-[#E3B778] px-2.5 py-1 rounded-lg text-xs font-bold shrink-0">Ask 🦉</span>
+        `;
+        c.appendChild(div);
+      });
+    }
+
+    function filterPromptsInModal() {
+      const q = document.getElementById('promptSearchInput').value.toLowerCase();
+      const filtered = ALL_50_PROMPTS.filter(p => p.text.toLowerCase().includes(q) || p.reply.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
+      populateModalPrompts(filtered);
+    }
+
+    function selectPromptAndSend(promptText, presetReply) {
+      playSfx('click');
+      appendChatMessage('user', promptText);
+      setTimeout(() => {
+        appendChatMessage('bot', presetReply || findBotAnswer(promptText));
+        playSfx('hoot');
+        triggerMascotSpeech("🦉 Answer generated! Ask me any of the 50 policy questions!");
+      }, 350);
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendChatMessage('user', text);
+      input.value = '';
+      playSfx('click');
+
+      setTimeout(() => {
+        const reply = findBotAnswer(text);
+        appendChatMessage('bot', reply);
+        playSfx('hoot');
+      }, 420);
+    }
+
+    function findBotAnswer(query) {
+      const q = query.toLowerCase();
+      const matched = ALL_50_PROMPTS.find(p => p.text.toLowerCase().includes(q) || q.includes(p.cat.toLowerCase()));
+      if (matched) return matched.reply;
+      return "Hoot! Based on our live 13-year dataset: India's graduate employability sits near ~58%, while Nordic systems lead globally due to high TVET credit integration (60%+) and tax-funded universal education.";
+    }
+
+    function appendChatMessage(sender, text) {
+      const log = document.getElementById('chatLog');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'flex items-start gap-3';
+
+      if (sender === 'user') {
+        wrapper.innerHTML = `
+          <div class="w-8 h-8 rounded-full bg-[#D4A5A5] text-[#2D3748] brutalist-border-sm flex items-center justify-center font-bold text-xs shrink-0">YOU</div>
+          <div class="bg-[#2D3748] text-white p-3.5 rounded-2xl brutalist-border-sm max-w-2xl">
+            <p class="text-xs font-medium leading-relaxed">${text}</p>
+          </div>
+        `;
+      } else {
+        wrapper.innerHTML = `
+          <div class="w-8 h-8 rounded-full bg-[#E3B778] brutalist-border-sm flex items-center justify-center font-bold text-xs shrink-0">🦉</div>
+          <div class="bg-[#FAF8F5] p-3.5 rounded-2xl brutalist-border-sm max-w-2xl">
+            <p class="font-bold text-[11px] uppercase text-[#81A296] mb-1">Prof. Owlsley (AI Tutor)</p>
+            <p class="text-xs font-medium text-gray-800 leading-relaxed">${text}</p>
+          </div>
+        `;
+      }
+      log.appendChild(wrapper);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function clearChatLog() {
+      document.getElementById('chatLog').innerHTML = `
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-[#E3B778] brutalist-border-sm flex items-center justify-center font-bold text-xs shrink-0">🦉</div>
+          <div class="bg-[#FAF8F5] p-3.5 rounded-2xl brutalist-border-sm max-w-2xl">
+            <p class="font-bold text-[11px] uppercase text-[#81A296] mb-1">Prof. Owlsley (AI Tutor)</p>
+            <p class="text-xs font-medium text-gray-800 leading-relaxed">Chat log reset! Choose from any of our 50 prompt topics above.</p>
+          </div>
+        </div>
+      `;
+      playSfx('click');
+    }
+
+    /* ==========================================================================
+       3. RIBBON FLOW ENGINE & DYNAMIC LIVE YEAR INSIGHTS
+       ========================================================================== */
+    const ALL_13_YEARS = ['2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026'];
+
+    const COUNTRY_RIBBON_DATA = {
+      IND: {
+        name: "India",
+        publicSpend: [3.8, 3.9, 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 4.4, 4.5, 4.6, 4.7, 4.8],
+        privateSpend: [1.2, 1.4, 1.6, 1.9, 2.2, 2.5, 2.8, 3.1, 3.3, 3.5, 3.7, 3.8, 3.9],
+        oopeSpend:    [58.2, 56.4, 54.1, 52.0, 50.3, 49.1, 48.5, 48.2, 47.5, 46.8, 45.9, 45.0, 44.2]
+      },
+      FIN: {
+        name: "Finland",
+        publicSpend: [6.3, 6.2, 6.1, 6.0, 5.9, 5.9, 6.1, 6.0, 5.9, 6.0, 6.1, 6.2, 6.3],
+        privateSpend: [0.3, 0.3, 0.4, 0.4, 0.4, 0.4, 0.5, 0.5, 0.5, 0.5, 0.5, 0.6, 0.6],
+        oopeSpend:    [2.4, 2.3, 2.2, 2.2, 2.1, 2.1, 2.0, 2.1, 2.0, 1.9, 1.9, 1.8, 1.8]
+      },
+      SWE: {
+        name: "Sweden",
+        publicSpend: [6.8, 6.7, 6.6, 6.7, 6.8, 6.7, 6.9, 6.8, 6.7, 6.7, 6.8, 6.8, 6.9],
+        privateSpend: [0.6, 0.6, 0.7, 0.7, 0.8, 0.8, 0.9, 0.9, 0.9, 1.0, 1.0, 1.0, 1.1],
+        oopeSpend:    [2.1, 2.0, 1.9, 1.9, 1.8, 1.8, 1.7, 1.8, 1.7, 1.6, 1.6, 1.5, 1.5]
+      },
+      NOR: {
+        name: "Norway",
+        publicSpend: [7.5, 7.4, 7.3, 7.2, 7.1, 7.2, 7.4, 7.3, 7.2, 7.2, 7.3, 7.4, 7.5],
+        privateSpend: [0.2, 0.2, 0.3, 0.3, 0.3, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.5, 0.5],
+        oopeSpend:    [2.8, 2.7, 2.6, 2.5, 2.5, 2.4, 2.5, 2.5, 2.4, 2.3, 2.3, 2.2, 2.2]
+      },
+      DNK: {
+        name: "Denmark",
+        publicSpend: [6.7, 6.6, 6.5, 6.4, 6.4, 6.4, 6.6, 6.5, 6.4, 6.4, 6.5, 6.6, 6.7],
+        privateSpend: [0.4, 0.4, 0.5, 0.5, 0.5, 0.5, 0.6, 0.6, 0.6, 0.7, 0.7, 0.7, 0.8],
+        oopeSpend:    [2.2, 2.1, 2.0, 2.0, 1.9, 1.9, 1.8, 1.9, 1.8, 1.7, 1.7, 1.6, 1.6]
+      }
+    };
+
+    const YEAR_HISTORICAL_NOTES = {
+      2014: "Baseline census period: RTE 25% quota implementation underway; Indian public spending stood at 3.8% of GDP with high primary dropout velocity.",
+      2015: "Millennium to SDG transition: Skill India initiative launched; Nordic countries sustained ~6.5% public expenditure with universal preschool.",
+      2016: "Early TVET pilots: Indian private EdTech investments begin to accelerate; primary pupil-teacher ratio stabilizes near 32:1.",
+      2017: "GST rationalization period: States struggle with committed salary bills; household out-of-pocket tuition burden hovers near 52%.",
+      2018: "Samagra Shiksha launched: Composite school grants expanded; Finland records 68% upper-secondary TVET enrollment share.",
+      2019: "Draft National Education Policy published: Focus shifts toward foundational early childhood education (ECCE) and teacher training.",
+      2020: "NEP 2020 approved amidst COVID disruption: Remote digital classrooms expose rural internet deficits while Nordic schools sustain digital parity.",
+      2021: "Post-pandemic remedial phase: NIPUN Bharat mission launched to restore foundational literacy and numeracy (FLN).",
+      2022: "Classroom re-openings: Surge in private tutoring demand pushes test-prep market valuations; Nordic adult lifelong learning crosses 30%.",
+      2023: "National Credit Framework (NCrF) operationalized: Academic Bank of Credits (ABC) links secondary vocational hours to university credits.",
+      2024: "PM-SHRI exemplar schools rollout: Over 14,500 institutions upgraded with modern composite laboratories and digital infrastructure.",
+      2025: "Vocational integration push: State secondary boards mandate 25% credit weighting for enterprise-based trade apprenticeships.",
+      2026: "6-Year NEP Roadmap Review: National employability index climbs toward 63/100, while public budget allocations reach ~4.8% of GDP."
+    };
+
+    let ribbonChartInstance = null;
+    let ribbonIsStacked = true;
+
+    function renderRibbonChart() {
+      const ctx = document.getElementById('ribbonFlowChart').getContext('2d');
+      if (ribbonChartInstance) ribbonChartInstance.destroy();
+
+      const country = document.getElementById('ribbonCountrySelect').value;
+      const compare = document.getElementById('ribbonCompareSelect').value;
+      const cData = COUNTRY_RIBBON_DATA[country];
+
+      const datasets = [
+        {
+          label: `${cData.name}: Public Govt Spend (% GDP)`,
+          data: cData.publicSpend,
+          backgroundColor: 'rgba(129, 162, 150, 0.55)',
+          borderColor: '#2D3748',
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: '#81A296',
+          pointRadius: 4
+        },
+        {
+          label: `${cData.name}: Private Sector / EdTech`,
+          data: cData.privateSpend,
+          backgroundColor: 'rgba(227, 183, 120, 0.55)',
+          borderColor: '#2D3748',
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: '#E3B778',
+          pointRadius: 4
+        },
+        {
+          label: `${cData.name}: Household Out-of-Pocket (OOPE Index)`,
+          data: cData.oopeSpend,
+          backgroundColor: 'rgba(212, 165, 165, 0.55)',
+          borderColor: '#2D3748',
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: '#D4A5A5',
+          pointRadius: 4
+        }
+      ];
+
+      if (compare !== 'NONE' && COUNTRY_RIBBON_DATA[compare]) {
+        const comp = COUNTRY_RIBBON_DATA[compare];
+        datasets.push({
+          label: `[Overlay] ${comp.name} Public Spend`,
+          data: comp.publicSpend,
+          borderColor: '#8E9AAF',
+          borderWidth: 3,
+          borderDash: [5, 4],
+          fill: false,
+          tension: 0.35,
+          pointBackgroundColor: '#8E9AAF',
+          pointRadius: 5
+        });
+      }
+
+      ribbonChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ALL_13_YEARS,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { font: { weight: 'bold', family: 'Plus Jakarta Sans', size: 11 }, color: '#2D3748' } }
+          },
+          scales: {
+            x: { grid: { color: '#E2E8F0' }, ticks: { font: { weight: 'bold' }, color: '#2D3748' } },
+            y: {
+              stacked: ribbonIsStacked,
+              grid: { color: '#E2E8F0' },
+              ticks: { font: { weight: 'bold' }, color: '#2D3748' }
+            }
+          }
+        }
+      });
+
+      inspectRibbonYear();
+    }
+
+    function updateRibbonData() {
+      playSfx('click');
+      renderRibbonChart();
+    }
+
+    function toggleRibbonMode(mode) {
+      playSfx('click');
+      ribbonIsStacked = (mode === 'stacked');
+      renderRibbonChart();
+    }
+
+    function inspectRibbonYear() {
+      const yr = document.getElementById('ribbonYearPointSelect').value;
+      const c = document.getElementById('ribbonCountrySelect').value;
+      const comp = document.getElementById('ribbonCompareSelect').value;
+      const idx = ALL_13_YEARS.indexOf(yr);
+      const data = COUNTRY_RIBBON_DATA[c];
+
+      document.getElementById('ribbonInspectYearLabel').innerText = `${data.name} (${yr}) Snapshot`;
+      document.getElementById('ribbonInspectValues').innerText = `Govt: ${data.publicSpend[idx]}% | Pvt: ${data.privateSpend[idx]}% | OOPE: ${data.oopeSpend[idx]}%`;
+
+      // Update Live Insight Card
+      const compName = comp !== 'NONE' ? COUNTRY_RIBBON_DATA[comp].name : 'Baseline Benchmark';
+      document.getElementById('yearInsightHeading').innerText = `${yr} Macro Analysis: ${data.name} ${comp !== 'NONE' ? 'vs. ' + compName : '(Standalone Analysis)'}`;
+
+      if (comp !== 'NONE') {
+        const compData = COUNTRY_RIBBON_DATA[comp];
+        const delta = (data.publicSpend[idx] - compData.publicSpend[idx]).toFixed(1);
+        document.getElementById('yearInsightDeltaPill').innerText = `Spending Delta: ${delta > 0 ? '+' : ''}${delta}% GDP`;
+        document.getElementById('yearInsightDifferential').innerText = `In ${yr}, ${data.name} allocated ${data.publicSpend[idx]}% GDP compared to ${compName}'s ${compData.publicSpend[idx]}% GDP (a difference of ${Math.abs(delta)}%). Out-of-pocket burden in ${data.name} stood at ${data.oopeSpend[idx]}% vs. ${compData.oopeSpend[idx]}% in ${compName}.`;
+      } else {
+        document.getElementById('yearInsightDeltaPill').innerText = `Govt Share: ${data.publicSpend[idx]}% GDP`;
+        document.getElementById('yearInsightDifferential').innerText = `In ${yr}, ${data.name} sustained a public funding stream of ${data.publicSpend[idx]}% of GDP against a private education sector contribution of ${data.privateSpend[idx]}%. Household OOPE was calculated at ${data.oopeSpend[idx]}%.`;
+      }
+
+      document.getElementById('yearInsightContext').innerText = YEAR_HISTORICAL_NOTES[yr] || "Historical indicator snapshot derived from multilateral open time-series records.";
+      document.getElementById('yearInsightTakeaway').innerText = `${data.name}'s data highlights the direct relationship between public GDP allocations and the reduction of private coaching burdens. Target 6.0%+ GDP outlay to ensure universal pre-primary coverage.`;
+    }
+
+    /* ==========================================================================
+       4. EDUCATEINDIA 2030 POLICY SIMULATOR ENGINE (NEW SECTION)
+       ========================================================================== */
+    function runPolicyEngine2030() {
+      playSfx('slider');
+      const budget = parseFloat(document.getElementById('polBudgetSlider').value);
+      const vocation = parseInt(document.getElementById('polVocSlider').value);
+      const teacher = parseFloat(document.getElementById('polTeacherSlider').value);
+      const ecce = parseInt(document.getElementById('polEcceSlider').value);
+
+      document.getElementById('polBudgetVal').innerText = `${budget.toFixed(1)}%`;
+      document.getElementById('polVocVal').innerText = `${vocation}%`;
+      document.getElementById('polTeacherVal').innerText = `${teacher.toFixed(1)}x`;
+      document.getElementById('polEcceVal').innerText = `${ecce}%`;
+
+      // Calculation 1: Employability Index
+      let emp = Math.round((budget * 4.6) + (vocation * 0.44) + (teacher * 16) + (ecce * 0.14));
+      emp = Math.min(98, Math.max(28, emp));
+      document.getElementById('outPolEmploy').innerText = `${emp} / 100`;
+
+      const bEmp = document.getElementById('badgePolEmploy');
+      if (emp >= 80) { bEmp.innerText = "World Class"; bEmp.className = "inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded border border-[#2D3748] bg-[#81A296] text-white"; }
+      else if (emp >= 65) { bEmp.innerText = "Competitive"; bEmp.className = "inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded border border-[#2D3748] bg-[#E3B778]"; }
+      else { bEmp.innerText = "Moderate"; bEmp.className = "inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded border border-[#2D3748] bg-[#FAF8F5]"; }
+
+      // Calculation 2: Youth NEET
+      let neet = 34.0 - (budget * 0.9) - (vocation * 0.16) - (teacher * 3.5) - (ecce * 0.05);
+      neet = Math.max(5.8, Math.min(32.0, neet));
+      document.getElementById('outPolNeet').innerText = `${neet.toFixed(1)}%`;
+
+      const bNeet = document.getElementById('badgePolNeet');
+      if (neet < 12.0) { bNeet.innerText = "Nordic Parity"; bNeet.className = "inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded border border-[#2D3748] bg-[#81A296] text-white"; }
+      else if (neet < 20.0) { bNeet.innerText = "Moderate"; bNeet.className = "inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded border border-[#2D3748] bg-[#E3B778]"; }
+      else { bNeet.innerText = "Elevated"; bNeet.className = "inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded border border-[#2D3748] bg-[#D4A5A5]"; }
+
+      // Calculation 3: Household Out of pocket
+      const bBurden = document.getElementById('outPolBurden');
+      if (budget >= 5.8 && teacher >= 1.6) { bBurden.innerText = "Low"; bBurden.className = "text-xl sm:text-2xl font-black text-[#81A296] mt-1.5"; }
+      else if (budget >= 4.4) { bBurden.innerText = "Moderate"; bBurden.className = "text-xl sm:text-2xl font-black text-[#E3B778] mt-1.5"; }
+      else { bBurden.innerText = "Severe"; bBurden.className = "text-xl sm:text-2xl font-black text-[#D4A5A5] mt-1.5"; }
+
+      // Calculation 4: Fiscal Deficit
+      const bFiscal = document.getElementById('outPolFiscal');
+      const load = (budget * 1.0) + (teacher * 0.8);
+      if (load > 8.5) { bFiscal.innerText = "High Deficit"; bFiscal.className = "text-xl sm:text-2xl font-black text-[#D4A5A5] mt-1.5"; }
+      else if (load > 6.8) { bFiscal.innerText = "Manageable"; bFiscal.className = "text-xl sm:text-2xl font-black text-[#E3B778] mt-1.5"; }
+      else { bFiscal.innerText = "Sustainable"; bFiscal.className = "text-xl sm:text-2xl font-black text-[#81A296] mt-1.5"; }
+
+      // Diagnostic Verdict
+      const verdict = document.getElementById('outPolVerdict');
+      if (budget >= 6.0 && vocation >= 40) {
+        verdict.innerText = "✨ Outstanding strategy! Reaching the NEP 6% GDP target while scaling vocational credits mirrors Denmark's dual model, sharply curbing youth NEET rates.";
+      } else if (budget < 3.5) {
+        verdict.innerText = "⚠️ Severe underfunding warning: Constrained public spending causes private tutoring costs to surge, placing heavy financial burdens on low-income households.";
+      } else {
+        verdict.innerText = "⚖️ Steady incremental progress. Raising teacher pay incentives and expanding universal ECCE coverage will elevate foundational literacy across primary schools.";
+      }
+    }
+
+    function resetPolicyEngine2030() {
+      playSfx('click');
+      document.getElementById('polBudgetSlider').value = 4.5;
+      document.getElementById('polVocSlider').value = 30;
+      document.getElementById('polTeacherSlider').value = 1.2;
+      document.getElementById('polEcceSlider').value = 45;
+      runPolicyEngine2030();
+    }
+
+    /* ==========================================================================
+       5. MONTHLY NEWS TICKER & MACRO REACTION
+       ========================================================================== */
+    const MONTHLY_NEWS_DATABASE = {
+      OCT_2026: [
+        { title: "NEP 2020 Completes 6-Year Milestone: Vocational Credits Cross 35% Mark", desc: "Over 45,000 secondary schools adopt NCrF-aligned vocational streams in tier-2 districts.", shock: { neet: -2.8, emp: 14, oope: -6, fiscal: "Sustainable" } },
+        { title: "Union MoE Mandates Cap on Private Coaching Class Duration for Minors", desc: "Guidelines restrict coaching sessions to maximum 3 hours daily to protect psychological well-being.", shock: { neet: 0.2, emp: 2, oope: -14, fiscal: "Neutral" } },
+        { title: "Finland Signs Bilateral TVET Instructor Training MoA with India", desc: "Finnish master pedagogues to train 10,000 ITI instructors across green energy and automation.", shock: { neet: -1.9, emp: 10, oope: -2, fiscal: "Manageable" } },
+        { title: "Private Higher Education Capital Expenditure Outpaces Central Grants", desc: "Private university capacity hits 46% of total STEM seats as families seek advanced placements.", shock: { neet: 0.5, emp: 4, oope: 8, fiscal: "Surplus" } },
+        { title: "State-Level Higher Education Budgets Fall Short of 6% GDP Roadmap", desc: "Only Kerala, Delhi, and Himachal Pradesh spend above 5.2% of GSDP on comprehensive education.", shock: { neet: 1.2, emp: -3, oope: 5, fiscal: "Constrained" } },
+        { title: "Denmark Offers 1,500 Direct Dual-Apprenticeship Visas to Indian Technicians", desc: "High-skill bilateral labor exchange targets wind energy and biological pharmaceutical engineering.", shock: { neet: -1.0, emp: 8, oope: -3, fiscal: "Positive" } },
+        { title: "Universal Early Childhood Nutrition Program Expanded to 1.4M Anganwadis", desc: "Integrated breakfast and preschool learning kits rolled out to curb foundational dropouts.", shock: { neet: -1.5, emp: 7, oope: -4, fiscal: "Manageable" } },
+        { title: "OECD Commends Scandinavian Early Childhood Model in Global Audit", desc: "Nordic universal childcare at age 1 praised as primary driver of sustainable 85%+ maternal labor force.", shock: { neet: -0.5, emp: 5, oope: -2, fiscal: "Optimal" } },
+        { title: "Rural Broadband Reach in Secondary Government Schools Reaches 72%", desc: "BharatNet enables access to digital laboratories and live Swayam lectures across 80,000 villages.", shock: { neet: -2.1, emp: 11, oope: -5, fiscal: "Sustainable" } },
+        { title: "Higher Education Degree Inflation Triggers Revisions in Entry Criteria", desc: "Corporate federations demand practical skill portfolios over pure university grade point averages.", shock: { neet: -1.2, emp: 9, oope: -1, fiscal: "Neutral" } }
+      ],
+      FEB_2026: [
+        { title: "Union Budget 2026 Raises Education Outlay to ₹1.28 Lakh Crore", desc: "Central capital outlays focus heavily on PM-SHRI exemplar institutes and AI laboratory grants.", shock: { neet: -2.2, emp: 12, oope: -4, fiscal: "Expanded Debt" } },
+        { title: "National Research Foundation (NRF) Releases First ₹5,000 Crore Tranche", desc: "Grant allocation prioritizes public university R&D consortiums with domestic deep-tech startups.", shock: { neet: -1.4, emp: 9, oope: -2, fiscal: "Manageable" } },
+        { title: "Sweden Education Council Revises School Voucher Regulatory Rules", desc: "Tightened governance bans dividend extraction from taxpayer-funded free schools in Stockholm.", shock: { neet: -0.4, emp: 3, oope: -1, fiscal: "Neutral" } },
+        { title: "Coaching Hubs in Kota and Hyderabad See Influx of 4.5 Lakh New Aspirants", desc: "Urban household expenditure on JEE and NEET entrance preparation rises by 12% year-on-year.", shock: { neet: 0.8, emp: 2, oope: 15, fiscal: "High OOPE Strain" } },
+        { title: "National Apprenticeship Promotion Scheme (NAPS) Hits 2 Million Enrolments", desc: "SMEs receive direct government wage reimbursement for hiring certified secondary trade apprentices.", shock: { neet: -3.1, emp: 15, oope: -8, fiscal: "Sustainable" } },
+        { title: "Norway Allocates Record 7.6% of GDP to Public Education and Green TVET", desc: "Sovereign wealth dividend continues to fund tuition-free master's education for all residents.", shock: { neet: -0.8, emp: 6, oope: -1, fiscal: "Sovereign Surplus" } },
+        { title: "Indian Medical Association Calls for Additional Government Medical Seats", desc: "Over 22 lakh candidates contest 1.1 lakh MBBS seats, highlighting severe demand-supply crunch.", shock: { neet: 0.4, emp: 1, oope: 12, fiscal: "Capital Deficit" } },
+        { title: "Teacher Eligibility Standards Raised with Mandatory 4-Year B.Ed Integrated Degree", desc: "MoE phases out standalone 1-year diplomas to professionalize primary school instructional quality.", shock: { neet: -1.1, emp: 7, oope: 0, fiscal: "Manageable" } },
+        { title: "AI-Powered Adaptive Assessment Piloted Across 12,000 State Schools", desc: "Automated formative testing identifies learning gaps in mathematics without high-stakes ranking.", shock: { neet: -1.0, emp: 8, oope: -3, fiscal: "Sustainable" } },
+        { title: "State Secondary Dropout Rates Decline to 12.4% Following Midday Meal Extension", desc: "Hot nutritious lunches extended to students through Grade 10 across 8 states.", shock: { neet: -1.7, emp: 6, oope: -5, fiscal: "Sustainable" } }
+      ]
+    };
+
+    let activeEventShock = null;
+
+    function onNewsMonthChange() {
+      playSfx('click');
+      const m = document.getElementById('newsMonthSelector').value;
+      const list = MONTHLY_NEWS_DATABASE[m] || MONTHLY_NEWS_DATABASE.OCT_2026;
+      const c = document.getElementById('monthlyNewsContainer');
+      c.innerHTML = '';
+
+      list.forEach((n, idx) => {
+        const card = document.createElement('div');
+        card.className = "brutalist-card bg-[#FAF8F5] p-3.5 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 hover:border-[#81A296] transition-colors";
+        card.innerHTML = `
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-[#81A296] text-white text-[10px] font-bold uppercase rounded">Top ${idx + 1}</span>
+              <span class="text-[10px] font-semibold text-gray-500">Verified Dispatch</span>
+            </div>
+            <h4 class="font-bold text-xs uppercase text-[#2D3748]">${n.title}</h4>
+            <p class="text-[11px] text-gray-600 font-medium">${n.desc}</p>
+          </div>
+          <button onclick="applyNewsImpact('${m}', ${idx})" class="brutalist-btn bg-[#E3B778] px-3 py-1.5 rounded-xl font-bold text-xs uppercase shrink-0">
+            ⚡ Inject Impact
+          </button>
+        `;
+        c.appendChild(card);
+      });
+    }
+
+    function applyNewsImpact(month, index) {
+      playSfx('click');
+      const item = MONTHLY_NEWS_DATABASE[month][index];
+      activeEventShock = item.shock;
+      document.getElementById('activeEventBadge').innerText = `Active: ${item.title.substring(0, 24)}...`;
+      renderMacroSimulationReaction();
+      triggerMascotSpeech(`⚡ News Shock: "${item.title.substring(0, 36)}..."`);
+    }
+
+    function renderMacroSimulationReaction() {
+      const lens = document.getElementById('simLensSelector').value;
+      const shock = activeEventShock || { neet: 0, emp: 0, oope: 0, fiscal: "Baseline (Stable)" };
+
+      let baseNeet = 24.8 + (shock.neet || 0);
+      let baseEmp = 58 + (shock.emp || 0);
+      let baseOope = 46.8 + (shock.oope || 0);
+
+      baseNeet = Math.max(5.5, Math.min(32.0, baseNeet));
+      baseEmp = Math.max(30, Math.min(96, baseEmp));
+      baseOope = Math.max(3.0, Math.min(65.0, baseOope));
+
+      if (lens === 'LABOR') {
+        document.getElementById('metric1Name').innerText = "Youth NEET Rate (%)";
+        document.getElementById('metric1Val').innerText = `${baseNeet.toFixed(1)}%`;
+        document.getElementById('metric1Bar').style.width = `${(baseNeet / 35) * 100}%`;
+
+        document.getElementById('metric2Name').innerText = "Employability Readiness (0-100)";
+        document.getElementById('metric2Val').innerText = `${baseEmp} / 100`;
+        document.getElementById('metric2Bar').style.width = `${baseEmp}%`;
+
+        document.getElementById('metric3Name').innerText = "Labor Market Absorption Index";
+        document.getElementById('metric3Val').innerText = `${(baseEmp * 0.85).toFixed(1)} Pts`;
+        document.getElementById('metric3Bar').style.width = `${baseEmp * 0.85}%`;
+
+        document.getElementById('metric4Name').innerText = "Vocational Transition Agility";
+        document.getElementById('metric4Val').innerText = baseNeet < 20 ? "High Agility" : "Moderate Friction";
+        document.getElementById('metric4Bar').style.width = baseNeet < 20 ? "80%" : "45%";
+
+      } else if (lens === 'HOUSEHOLD') {
+        document.getElementById('metric1Name').innerText = "Household Out-of-Pocket Spend %";
+        document.getElementById('metric1Val').innerText = `${baseOope.toFixed(1)}%`;
+        document.getElementById('metric1Bar').style.width = `${baseOope}%`;
+
+        document.getElementById('metric2Name').innerText = "Private Tutoring Shadow Tax";
+        document.getElementById('metric2Val').innerText = baseOope > 40 ? "Severe Strain" : "Moderate";
+        document.getElementById('metric2Bar').style.width = baseOope > 40 ? "85%" : "40%";
+
+        document.getElementById('metric3Name').innerText = "Disposable Income Depletion";
+        document.getElementById('metric3Val').innerText = `~${(baseOope * 0.45).toFixed(1)}% of Urban Net`;
+        document.getElementById('metric3Bar').style.width = `${baseOope * 0.45 * 2}%`;
+
+        document.getElementById('metric4Name').innerText = "Public Free Alternative Uptake";
+        document.getElementById('metric4Val').innerText = "54% Primary Share";
+        document.getElementById('metric4Bar').style.width = "54%";
+      } else {
+        document.getElementById('metric1Name').innerText = "Public Education Budget Elasticity";
+        document.getElementById('metric1Val').innerText = shock.fiscal;
+        document.getElementById('metric1Bar').style.width = "65%";
+
+        document.getElementById('metric2Name').innerText = "Sovereign Debt Load";
+        document.getElementById('metric2Val').innerText = "Sustainable (Under 6.2% Deficit)";
+        document.getElementById('metric2Bar').style.width = "55%";
+
+        document.getElementById('metric3Name').innerText = "Capital vs Salary Expenditure Ratio";
+        document.getElementById('metric3Val').innerText = "18% Capital / 82% Revenue";
+        document.getElementById('metric3Bar').style.width = "82%";
+
+        document.getElementById('metric4Name').innerText = "Multi-Year Fiscal Feasibility";
+        document.getElementById('metric4Val').innerText = "Approved (Within FRBM Ceiling)";
+        document.getElementById('metric4Bar').style.width = "75%";
+      }
+
+      document.getElementById('simDiagnosticNote').innerText = `Diagnostic: Macro reaction reflects ${lens} focus under event shock parameters.`;
+    }
+
+    function resetMacroSimulation() {
+      playSfx('click');
+      activeEventShock = null;
+      document.getElementById('activeEventBadge').innerText = "Event: None Selected";
+      renderMacroSimulationReaction();
+    }
+
+    /* ==========================================================================
+       6. PUBLIC VS PRIVATE UNIT ECONOMICS SIMULATOR
+       ========================================================================== */
+    let liveEconomicsChartInstance = null;
+
+    const DEGREE_BASE_COSTS = {
+      ENG:  { pub: 45000,  pri: 280000, prepYear: 120000, startSalary: 600000 },
+      MED:  { pub: 30000,  pri: 1800000,prepYear: 160000, startSalary: 750000 },
+      MGMT: { pub: 80000,  pri: 650000, prepYear: 90000,  startSalary: 850000 },
+      HUM:  { pub: 15000,  pri: 140000, prepYear: 40000,  startSalary: 380000 }
+    };
+
+    function runEconomicsModel() {
+      const field = document.getElementById('econDegreeField').value;
+      const tier = document.getElementById('econTierSelect').value;
+      const prepYears = parseInt(document.getElementById('econCoachingYears').value);
+      const scholarship = parseInt(document.getElementById('econScholarship').value);
+
+      document.getElementById('coachingYearsVal').innerText = `${prepYears} Years`;
+      document.getElementById('scholarshipVal').innerText = `${scholarship}%`;
+
+      const base = DEGREE_BASE_COSTS[field];
+      const tierMultiplier = (tier === 'TIER1') ? 1.25 : 0.95;
+
+      const totalPrepCost = prepYears * base.prepYear * tierMultiplier;
+      const annualPub = base.pub * (1 - (scholarship / 100)) * tierMultiplier;
+      const annualPri = base.pri * tierMultiplier;
+
+      const totalPub4Yr = (annualPub * 4) + totalPrepCost;
+      const totalPri4Yr = (annualPri * 4) + totalPrepCost;
+
+      const pubPayback = (totalPub4Yr / base.startSalary).toFixed(1);
+      const priPayback = (totalPri4Yr / (base.startSalary * 1.15)).toFixed(1);
+
+      document.getElementById('calcPubCost').innerText = `₹${Math.round(totalPub4Yr).toLocaleString('en-IN')}`;
+      document.getElementById('calcPriCost').innerText = `₹${Math.round(totalPri4Yr).toLocaleString('en-IN')}`;
+      document.getElementById('calcCoachingCost').innerText = `₹${Math.round(totalPrepCost).toLocaleString('en-IN')}`;
+      document.getElementById('calcPayback').innerText = `Public: ${pubPayback}y | Pvt: ${priPayback}y`;
+
+      updateEconomicsChart(annualPub * 4, annualPri * 4, totalPrepCost);
+    }
+
+    function updateEconomicsChart(pubTuition, priTuition, coaching) {
+      const ctx = document.getElementById('liveEconomicsChart').getContext('2d');
+      if (liveEconomicsChartInstance) liveEconomicsChartInstance.destroy();
+
+      liveEconomicsChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Total Degree Cost Breakdown (₹)'],
+          datasets: [
+            { label: 'Public Tuition (4-Yr)', data: [pubTuition], backgroundColor: '#81A296', borderColor: '#2D3748', borderWidth: 2 },
+            { label: 'Private Tuition (4-Yr)', data: [priTuition], backgroundColor: '#D4A5A5', borderColor: '#2D3748', borderWidth: 2 },
+            { label: 'Shadow Prep / Coaching', data: [coaching], backgroundColor: '#E3B778', borderColor: '#2D3748', borderWidth: 2 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { font: { weight: 'bold', size: 10 }, color: '#2D3748' } } },
+          scales: {
+            x: { grid: { color: '#E2E8F0' }, ticks: { font: { weight: 'bold' } } },
+            y: { grid: { color: '#E2E8F0' }, ticks: { font: { weight: 'bold' } } }
+          }
+        }
+      });
+    }
+
+    function resetEconomicsSimulator() {
+      playSfx('click');
+      document.getElementById('econDegreeField').value = 'ENG';
+      document.getElementById('econTierSelect').value = 'TIER1';
+      document.getElementById('econCoachingYears').value = 2;
+      document.getElementById('econScholarship').value = 25;
+      runEconomicsModel();
+    }
+
+    /* ==========================================================================
+       7. NORDIC VS. INDIA VISUAL MULTI-MATRIX (GAUGES & RADAR)
+       ========================================================================== */
+    const BENCHMARK_10_METRICS = [
+      { name: "Public Education Spend (% GDP)", ind: 4.5, nord: 6.8, unit: "%", indScore: 55, nordScore: 92 },
+      { name: "Youth NEET Rate (% 15-24)", ind: 24.8, nord: 6.2, unit: "%", indScore: 32, nordScore: 94, inverse: true },
+      { name: "Primary Pupil-Teacher Ratio", ind: 28.4, nord: 11.5, unit: ":1", indScore: 40, nordScore: 90, inverse: true },
+      { name: "Household Out-of-Pocket Spend %", ind: 48.2, nord: 2.1, unit: "%", indScore: 25, nordScore: 98, inverse: true },
+      { name: "Vocational & TVET Stream Share", ind: 12.5, nord: 62.0, unit: "%", indScore: 22, nordScore: 95 },
+      { name: "Adult Lifelong Learning %", ind: 8.5, nord: 31.8, unit: "%", indScore: 30, nordScore: 92 },
+      { name: "Teacher Pay vs. Average Wage", ind: 0.85, nord: 1.25, unit: "x", indScore: 60, nordScore: 88 },
+      { name: "PISA Equivalent Standard Score", ind: 388, nord: 516, unit: "pts", indScore: 45, nordScore: 94 },
+      { name: "Universal ECCE (Age 1-6) Enrollment", ind: 45.0, nord: 96.5, unit: "%", indScore: 42, nordScore: 98 },
+      { name: "Tertiary Gross Enrollment Ratio (GER)", ind: 31.0, nord: 88.0, unit: "%", indScore: 50, nordScore: 91 }
+    ];
+
+    let matrixRadarChartInstance = null;
+
+    function renderVisualMatrixGauges() {
+      const container = document.getElementById('visualMatrixGaugesView');
+      container.innerHTML = '';
+
+      BENCHMARK_10_METRICS.forEach(m => {
+        const card = document.createElement('div');
+        card.className = "brutalist-card bg-[#FAF8F5] p-4 rounded-2xl space-y-2";
+        
+        const gap = m.inverse ? (m.ind - m.nord).toFixed(1) : (m.nord - m.ind).toFixed(1);
+
+        card.innerHTML = `
+          <div class="flex justify-between items-center">
+            <h4 class="font-bold text-xs uppercase text-[#2D3748]">${m.name}</h4>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded ${m.indScore > 50 ? 'bg-[#81A296] text-white' : 'bg-[#D4A5A5] text-[#2D3748]'}">
+              Gap: ${gap} ${m.unit}
+            </span>
+          </div>
+
+          <div class="space-y-1.5 pt-1">
+            <div>
+              <div class="flex justify-between text-[11px] font-bold">
+                <span>🇮🇳 India: ${m.ind}${m.unit}</span>
+                <span class="text-gray-500">${m.indScore}/100</span>
+              </div>
+              <div class="w-full bg-gray-200 h-2.5 rounded-full overflow-hidden border border-[#2D3748]">
+                <div class="bg-[#D4A5A5] h-full rounded-full" style="width: ${m.indScore}%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-[11px] font-bold">
+                <span>🇫🇮 Nordic Benchmark: ${m.nord}${m.unit}</span>
+                <span class="text-gray-500">${m.nordScore}/100</span>
+              </div>
+              <div class="w-full bg-gray-200 h-2.5 rounded-full overflow-hidden border border-[#2D3748]">
+                <div class="bg-[#81A296] h-full rounded-full" style="width: ${m.nordScore}%"></div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderVisualMatrixRadar() {
+      const ctx = document.getElementById('matrixRadarCanvas').getContext('2d');
+      if (matrixRadarChartInstance) matrixRadarChartInstance.destroy();
+
+      const labels = BENCHMARK_10_METRICS.map(m => m.name.substring(0, 18) + '...');
+      const indScores = BENCHMARK_10_METRICS.map(m => m.indScore);
+      const nordScores = BENCHMARK_10_METRICS.map(m => m.nordScore);
+
+      matrixRadarChartInstance = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: '🇮🇳 India Index Score',
+              data: indScores,
+              backgroundColor: 'rgba(212, 165, 165, 0.4)',
+              borderColor: '#D4A5A5',
+              borderWidth: 2.5,
+              pointBackgroundColor: '#D4A5A5',
+              pointRadius: 4
+            },
+            {
+              label: '🇫🇮 Nordic Composite Benchmark',
+              data: nordScores,
+              backgroundColor: 'rgba(129, 162, 150, 0.4)',
+              borderColor: '#81A296',
+              borderWidth: 2.5,
+              pointBackgroundColor: '#81A296',
+              pointRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { font: { weight: 'bold', family: 'Plus Jakarta Sans', size: 11 }, color: '#2D3748' } }
+          },
+          scales: {
+            r: {
+              grid: { color: '#E2E8F0' },
+              angleLines: { color: '#CBD5E1' },
+              suggestedMin: 10,
+              suggestedMax: 100,
+              ticks: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    function switchVisualMatrixView(view) {
+      playSfx('click');
+      const gView = document.getElementById('visualMatrixGaugesView');
+      const rView = document.getElementById('visualMatrixRadarView');
+      const btnG = document.getElementById('matrixBtnGauges');
+      const btnR = document.getElementById('matrixBtnRadar');
+
+      if (view === 'radar') {
+        gView.classList.add('hidden');
+        rView.classList.remove('hidden');
+        btnR.className = "brutalist-btn bg-[#81A296] text-white px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase";
+        btnG.className = "brutalist-btn bg-[#FAF8F5] px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase";
+        renderVisualMatrixRadar();
+      } else {
+        rView.classList.add('hidden');
+        gView.classList.remove('hidden');
+        btnG.className = "brutalist-btn bg-[#81A296] text-white px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase";
+        btnR.className = "brutalist-btn bg-[#FAF8F5] px-3.5 py-1.5 rounded-xl font-bold text-xs uppercase";
+      }
+    }
+
+    /* ==========================================================================
+       8. CITATION EXPORT & MASCOT HELPERS
+       ========================================================================== */
+    function downloadCitationPackage() {
+      playSfx('click');
+      const citationText = `EDUPOLICY INTELLIGENCE DATA CITATION PACKAGE (2026)
+-----------------------------------------------------------
+1. World Bank Open Data: Indicators SE.XPD.TOTL.GD.ZS, SL.UEM.NEET.ZS, SE.PRM.ENRL.TC.ZS
+   URL: https://api.worldbank.org/v2/country/
+2. UNESCO Institute for Statistics (UIS): Household Out-of-Pocket Expenditure
+   URL: https://uis.unesco.org/
+3. Ministry of Statistics and Programme Implementation (MoSPI): Periodic Labour Force Survey (PLFS)
+   URL: https://www.mospi.gov.in/
+4. Open Budgets India: Union and State Demand for Grants
+   URL: https://openbudgetsindia.org/
+5. NITI Aayog NDAP / UDISE+: School Infrastructure & Pupil-Teacher Ratios
+   URL: https://ndap.niti.gov.in/
+6. OECD Education GPS: PISA Benchmark Database & Nordic TVET Ratios
+   URL: https://gpseducation.oecd.org/
+
+Generated by EduVerse Ultra Platform.`;
+
+      const blob = new Blob([citationText], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'EduVerse_Data_Sources_Citation.txt';
+      a.click();
+    }
+
+    function triggerMascotSpeech(msg) {
+      document.getElementById('mascotSpeechText').innerText = msg;
+      playSfx('hoot');
+    }
+
+    function triggerMascotHoot() {
+      triggerMascotSpeech("Hoot! In Finland, comprehensive schools conduct no standardized testing before age 18.");
+    }
+
+    function closeMascotPopup() {
+      document.getElementById('mascotFloatingBox').classList.add('hidden');
+    }
+
+    /* ==========================================================================
+       9. LIFECYCLE BOOT
+       ========================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      renderRibbonChart();
+      renderPromptChips();
+      runPolicyEngine2030();
+      onNewsMonthChange();
+      runEconomicsModel();
+      renderVisualMatrixGauges();
+    });
+  </script>
+</body>
+</html>
+```
